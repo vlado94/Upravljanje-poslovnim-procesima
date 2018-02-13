@@ -10,4 +10,6 @@ public interface UserService {
 	User findOne(Long id);
 
 	void delete(Long id);
+	
+	String generateRandomKey();
 }

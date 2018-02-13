@@ -15,7 +15,14 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "USER_ID")
 	private Long id;
-	
+
 	private String firstName;
-	private String lastName;	
+	private String lastName;
+	private String userName;
+	private String mail;
+	private String city;
+	private int type;
+	private long longitude;
+	private long latitude;
 }
+
