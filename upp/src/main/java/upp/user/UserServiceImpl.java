@@ -1,10 +1,14 @@
 package upp.user;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
 import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 
 @Service
@@ -23,8 +27,9 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public User save(User obj) {
-		return repository.save(obj);
+	public User save(MockUser obj) {
+		User user = new User(obj);
+		return repository.save(user);
 	}
 
 	@Override
@@ -48,5 +53,28 @@ public class UserServiceImpl implements UserService {
 		}
 		String saltStr = salt.toString();
 		return saltStr;
+	}
+
+	@Override
+	public User findOneByEmailAndPassword(String email, String password) {
+		User user = repository.findByEmailAndPassword(email,password);
+		return user;
+	}
+	
+	@Override
+	public User findOneByEmailAndUserName(String email, String userName) {
+		User user = repository.findByEmailAndUserName(email,userName);
+		return user;
+	}
+
+	@Override
+	public User findOneByRandomKey(String key) {
+		User user = null;
+		ArrayList<User> users = Lists.newArrayList(repository.findAll());
+		for(int i=0;i<users.size();i++) {
+			if(users.get(i).getRandomKey().equals(key))
+				user = users.get(i);
+		}
+		return user;
 	}
 }

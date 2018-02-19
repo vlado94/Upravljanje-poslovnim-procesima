@@ -16,13 +16,38 @@ public class User {
 	@Column(name = "USER_ID")
 	private Long id;
 
-	private String firstName;
-	private String lastName;
+	private String name;
+	private String email;
 	private String userName;
-	private String mail;
+	private String password;
+	private String address;
 	private String city;
-	private int type;
-	private long longitude;
-	private long latitude;
+	private String postNumber;
+	private int registrated;	
+	
+	//1 for clasic users 
+	//2 for companies
+	private int role;
+	
+	private double longitude;
+	private double latitude;
+	
+	private String randomKey;	
+
+	public User() {}
+	public User(MockUser obj) {
+		name = obj.getName();
+		email = obj.getEmail();
+		userName = obj.getUserName();
+		password = obj.getPassword();
+		address = obj.getAddress();
+		city = obj.getCity();
+		postNumber = obj.getPostNumber();
+		randomKey = obj.getRandomKey();
+		role = obj.getRole();
+		latitude = obj.getLatitude();
+		longitude = obj.getLongitude();
+		registrated = obj.getRegistrated();
+	}
 }
 
