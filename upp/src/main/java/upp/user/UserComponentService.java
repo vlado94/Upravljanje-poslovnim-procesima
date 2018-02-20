@@ -36,7 +36,7 @@ public class UserComponentService {
 	}
 	
 	public MockUser validateUserForRegistration(MockUser obj) {
-		User user = userService.findOneByEmailAndUserName(obj.getEmail(),obj.getUserName());
+		User user = userService.findOneByEmailOrUserName(obj.getEmail(),obj.getUserName());
 		if(user == null)
 			obj.setValid(1);
 		return obj;

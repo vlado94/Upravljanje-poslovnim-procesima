@@ -16,7 +16,7 @@
 	<body>
 		<div class="container">
 			<div id="registraionDiv" class="row">
-				<form id="commonRegistraionForm" class="col-sm-offset-3 col-sm-5">
+				<form id="commonRegistraionForm" class="col-sm-offset-1 col-sm-6">
 					<fieldset>
 					    <legend>Registar form</legend>
 						<div class="form-group">
@@ -72,13 +72,12 @@
 							<label class="col-sm-3">Role :</label>
 							<div class="col-sm-9">	
 								<select class="form-control" id="role">
-									<option value=1>User</option>
-									<option value=2>Company</option>
+									<option value="1">User</option>
+									<option value="2" selected>Company</option>
 								</select>
 							</div>
 						</div>
 
-						<br><br>
 						<div class="col-sm-12">	
 							<div class="text-right">
 								<button type="submit" class="btn btn-primary">Save</button>					
@@ -86,7 +85,43 @@
 						</div>
 					</fieldset>
 				</form>
-			</div>		
+				<form id="registeaCompanyForm" class="col-sm-5">
+					<fieldset>
+					    <legend>Registar company</legend>
+						<input type="hidden" id="assignedKey" />
+						<input type="hidden" id="latitude" />
+						<input type="hidden" id="longitude" />
+						<div class="form-group">
+							<label class="col-sm-3">Name :</label>
+							<div class="col-sm-9">	
+								<input type="text" id="companyName" class="form-control" value="MINS" />
+							</div>
+						</div>				
+
+						<div class="form-group">
+							<label class="col-sm-3">Distance:</label>
+							<div class="col-sm-9">	
+								<input type="text" id="distance" class="form-control" value="50" />
+							</div>
+						</div>				
+
+						<div class="form-group">
+							<label class="col-sm-3">Categories:</label>
+							<div class="col-sm-9">	
+								<select multiple class="form-control" id="categories">								
+								</select>
+							</div>
+						</div>				
+
+						<div class="col-sm-12">	
+							<div class="text-right">
+								<button type="button" onclick="addCompany()"class="btn btn-primary">Save</button>					
+							</div>			
+						</div>
+						
+					</fieldset>
+				</form>
+			</div>	
 		</div>
 	</body>
 </html>

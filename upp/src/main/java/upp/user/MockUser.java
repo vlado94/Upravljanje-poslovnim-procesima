@@ -18,6 +18,8 @@ public class MockUser implements Serializable {
 	private double longitude;
 	private double latitude;
 	private int registrated;
+	private int distance;
+	private String companyName;
 
 	private String randomKey;
 	private int valid;
@@ -41,6 +43,9 @@ public class MockUser implements Serializable {
 		role = obj.getRole();
 		obj.setLatitude(0);
 		obj.setLongitude(0);
+		randomKey = obj.getRandomKey();
+		distance = obj.getDistance();
+		companyName = obj.getCompanyName();
 		randomKey = obj.getRandomKey();
 	}
 }

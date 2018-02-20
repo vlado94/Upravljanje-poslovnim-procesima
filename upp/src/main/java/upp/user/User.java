@@ -23,7 +23,10 @@ public class User {
 	private String address;
 	private String city;
 	private String postNumber;
-	private int registrated;	
+	private int registrated;
+	
+	private int distance;
+	private String companyName;
 	
 	//1 for clasic users 
 	//2 for companies
@@ -48,6 +51,8 @@ public class User {
 		latitude = obj.getLatitude();
 		longitude = obj.getLongitude();
 		registrated = obj.getRegistrated();
+		distance = obj.getDistance();
+		companyName = obj.getCompanyName();
 	}
 }
 

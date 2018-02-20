@@ -11,7 +11,7 @@ public interface UserService {
 	
 	User findOneByEmailAndPassword(String email,String password);
 
-	User findOneByEmailAndUserName(String email,String userName);
+	User findOneByEmailOrUserName(String email,String userName);
 
 	User findOneByRandomKey(String key);
 

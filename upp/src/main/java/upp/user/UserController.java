@@ -6,7 +6,6 @@ import java.util.List;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
-import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,8 +48,8 @@ public class UserController {
 	}
 	
 	@PostMapping
-	public String add(@RequestBody MockUser obj) {
-		String retVal = "";
+	public UserResponse add(@RequestBody MockUser obj) {
+		UserResponse retVal = new UserResponse();
 		HashMap<String, Object> variables=new HashMap<>();
 		String key = userService.generateRandomKey();
 		variables.put("userKey",key);
@@ -62,17 +61,34 @@ public class UserController {
 		variables.put("user", obj);
 		taskService.complete(t.getId(),variables);
 		
+		retVal.setUser(obj);
 		if(obj.getRole() == 2) {
-			retVal = "More data";
+			retVal.setMessage("More data");
 		}
 		else if(obj.getValid() == 1) {
-			retVal = "Registrated";
+			retVal.setMessage("Registrated");
 		} else {
-			retVal = "Busy username or email";
+			retVal.setMessage("Busy username or email");
 		}
 		return retVal;
 	}	
 	
+	@PostMapping("/addCompany")
+	public UserResponse addCompany(@RequestBody MockUser obj) {
+		UserResponse retVal = new UserResponse();
+		Task t= taskService.createTaskQuery().active().taskAssignee(obj.getRandomKey()).list().get(0);
+
+		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
+		variables.put("user", obj);
+		taskService.complete(t.getId(),variables);
+		retVal.setUser(obj);
+		if(obj.getValid() == 1) {
+			retVal.setMessage("Registrated");
+		} else {
+			retVal.setMessage("Busy username or email");
+		}
+		return retVal;
+	}
 	@GetMapping("/confirmRegistration/{key}")
 	public void confirmRegistration(@PathVariable String key) {
 		HashMap<String, Object> variables=new HashMap<>();

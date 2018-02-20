@@ -9,7 +9,7 @@
     <serviceTask id="sid-9DFC483F-2C57-4378-AE25-30460BD3838F" name="DefineGeoLocation" activiti:expression="${userComponentService.defineGeoLocation(user)}" activiti:resultVariableName="user"></serviceTask>
     <sequenceFlow id="flow8" sourceRef="usertask2" targetRef="sid-9DFC483F-2C57-4378-AE25-30460BD3838F"></sequenceFlow>
     <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
-    <userTask id="usertask3" name="Define categories for company"></userTask>
+    <userTask id="usertask3" name="Define categories for company" activiti:assignee="${userKey}"></userTask>
     <inclusiveGateway id="inclusivegateway1" name="Inclusive Gateway"></inclusiveGateway>
     <sequenceFlow id="flow9" sourceRef="exclusivegateway1" targetRef="usertask3">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${user.role==2}]]></conditionExpression>

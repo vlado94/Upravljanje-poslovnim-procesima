@@ -62,8 +62,8 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	@Override
-	public User findOneByEmailAndUserName(String email, String userName) {
-		User user = repository.findByEmailAndUserName(email,userName);
+	public User findOneByEmailOrUserName(String email, String userName) {
+		User user = repository.findByEmailOrUserName(email,userName);
 		return user;
 	}
 
