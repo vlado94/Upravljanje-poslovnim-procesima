@@ -1,6 +1,8 @@
 package upp.user;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import lombok.Data;
 
@@ -24,12 +26,14 @@ public class MockUser implements Serializable {
 	private String randomKey;
 	private int valid;
 	private int sentMail;
+	private List<Long> categories;
 	
 	public MockUser() {
 		longitude = 0;
 		latitude = 0;
 		valid = 0;
 		sentMail = 0;
+		categories = new ArrayList<Long>();
 	}
 	public MockUser(User obj) {
 		id = obj.getId();

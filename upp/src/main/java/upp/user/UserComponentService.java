@@ -64,8 +64,7 @@ public class UserComponentService {
 	public User confirmRegistration(MockUser obj) {
 		User user = userService.findOne(obj.getId());
 		if(user != null) {
-			obj.setRegistrated(1);
-			user = userService.save(obj);
+			user = userService.setRegistrated(obj.getId());
 		}
 		return user;
 	}	

@@ -11,15 +11,17 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 
+import upp.category.CategoryRepository;
+
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
-	private final UserRepository repository;
+	
+	@Autowired
+	private UserRepository repository;
 
 	@Autowired
-	public UserServiceImpl(final UserRepository repository) {
-		this.repository = repository;
-	}
+	private CategoryRepository categoryRepository;
 
 	@Override
 	public List<User> findAll() {
@@ -29,7 +31,19 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User save(MockUser obj) {
 		User user = new User(obj);
+		if(obj.getCategories() != null)
+			for(long categoryID : obj.getCategories())
+				user.getCategories().add(categoryRepository.findOne(categoryID));
+
 		return repository.save(user);
+	}
+	
+	@Override
+	public User setRegistrated(long id) {
+		User u = repository.findOne(id);
+		u.setRegistrated(1);
+		u = repository.save(u);
+		return u;
 	}
 
 	@Override

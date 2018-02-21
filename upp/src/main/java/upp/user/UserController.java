@@ -3,7 +3,8 @@ package upp.user;
 import java.util.HashMap;
 import java.util.List;
 
-import org.activiti.engine.RepositoryService;
+import javax.servlet.http.HttpSession;
+
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
@@ -27,10 +28,10 @@ public class UserController {
 	private UserService userService;
 
 	@Autowired
-	private RuntimeService runtimeService;
+	private HttpSession httpSession;
 	
 	@Autowired
-	private RepositoryService repositoryService;
+	private RuntimeService runtimeService;
 	
 	@Autowired
 	private TaskService taskService;
@@ -46,6 +47,56 @@ public class UserController {
 	public void delete(@PathVariable Long id) {
 		userService.delete(id);
 	}
+	
+	@PostMapping("logIn")
+	public String logIn(@RequestBody MockUser obj) {
+		String retVal = "";
+		User u = userService.findOneByEmailAndPassword(obj.getEmail(), obj.getPassword());
+		if(u == null) {
+			retVal = "Wrong inputs";
+		}
+		else if(u.getRegistrated() == 0) {
+			retVal = "Please confirm registration first";			
+		}
+		else if(u.getRole() == 1) {
+			httpSession.setAttribute("userID", u.getId());
+			retVal = "User";			
+		}
+		else if(u.getRole() == 2) {
+			httpSession.setAttribute("userID", u.getId());
+			retVal = "Company";			
+		}
+		return retVal;
+		
+	}
+
+	@PostMapping("logOut")
+	public String logOut() {
+		String retVal = "";
+		httpSession.invalidate();
+		return retVal;
+	}
+	
+	@GetMapping("checkRole")
+	public String checkRole() {
+		String retVal = "";
+		Object id = httpSession.getAttribute("userID");
+		if(id == null) {
+			retVal = "Redirect";
+		}
+		else {
+			long userID = (long) id;
+			User u = userService.findOne(userID);
+			if(u.getRole() == 1) {
+				retVal = "User";				
+			}
+			else if(u.getRole() == 2) {
+				retVal = "Company";
+			}
+		}
+		return retVal;
+	}
+	
 	
 	@PostMapping
 	public UserResponse add(@RequestBody MockUser obj) {

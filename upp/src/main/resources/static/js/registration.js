@@ -12,7 +12,7 @@ $(document).ready(function() {
     	}
     })
 	
-	$( "#commonRegistraionForm" ).submit(function( e ) {
+	$("#commonRegistraionForm").submit(function( e ) {
         if (e.isDefaultPrevented() === false) {
         	dataToAdd = {}
         	dataToAdd.name = $("#name").val();
@@ -37,10 +37,10 @@ $(document).ready(function() {
             		showMessage("Insert data for company");
             		$("#registeaCompanyForm").css("display","block");
             		$("#commonRegistraionForm button").css("display","none");
-            		//enable form for categories
             	}
             	else if(data.message === "Registrated") {
             		showMessage(data.message + ", confirm registration");
+            		setTimeout(redirectOnLogin, 2000);
             	}
             	else if(data.message === "Busy username or email") {
             		showErrors(data.message);
@@ -68,7 +68,7 @@ function addCompany() {
 	dataToAdd.distance = $("#distance").val();
 	dataToAdd.randomKey = $("#assignedKey").val();
 	dataToAdd.latitude = $("#latitude").val();
-	dataToAdd.longitude = $("#longitude").val();
+	dataToAdd.categories = $("#categories").val();
 	$.ajax({
         url: "/user/addCompany",
         type: 'POST',
@@ -78,6 +78,7 @@ function addCompany() {
     }).done(function (data) {
     	if(data.message === "Registrated") {
     		showMessage(data.message + ", confirm registration");
+    		setTimeout(redirectOnLogin, 2000);
     	}
     	else if(data.message === "Busy username or email") {
     		showErrors(data.message);
@@ -85,10 +86,6 @@ function addCompany() {
     })
 }
 
-function showErrors(errors) {
-    toastr.error(errors, "Errors");
-}
-
-function showMessage(message) {
-    toastr.success(message, "Succesfull");
+function redirectOnLogin() {
+	window.location.href = 'index.html';
 }

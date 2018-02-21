@@ -7,6 +7,8 @@ public interface UserService {
 
 	User save(MockUser obj);
 
+	User setRegistrated(long id);
+
 	User findOne(Long id);
 	
 	User findOneByEmailAndPassword(String email,String password);
