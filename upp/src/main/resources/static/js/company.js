@@ -3,8 +3,12 @@ $(document).ready(function() {
         url: "/user/checkRole",
         type: 'GET'
     }).done(function (data) {
-    	if(data === "Redirect" || data === "User") {
+    	type = data.split("-")[0]
+    	if(type === "Redirect" || type === "User") {
     		window.location.href = 'index.html';
+    	}
+    	else {
+    		$(".navbar-brand").text(data.split("-")[1]);
     	}
     })
 })

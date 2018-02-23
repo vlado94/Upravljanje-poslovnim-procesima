@@ -67,10 +67,9 @@ public class UserController {
 			retVal = "Company";			
 		}
 		return retVal;
-		
 	}
 
-	@PostMapping("logOut")
+	@GetMapping("logOut")
 	public String logOut() {
 		String retVal = "";
 		httpSession.invalidate();
@@ -88,10 +87,10 @@ public class UserController {
 			long userID = (long) id;
 			User u = userService.findOne(userID);
 			if(u.getRole() == 1) {
-				retVal = "User";				
+				retVal = "User-"+u.getName();				
 			}
 			else if(u.getRole() == 2) {
-				retVal = "Company";
+				retVal = "Company-"+u.getName();
 			}
 		}
 		return retVal;
