@@ -36,18 +36,6 @@ public class UserController {
 	@Autowired
 	private TaskService taskService;
 	
-	
-	@GetMapping
-	public ResponseEntity<List<User>> findAll() {
-		return new ResponseEntity<>(userService.findAll(), HttpStatus.OK);
-	}
-	
-	@DeleteMapping(path = "/{id}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void delete(@PathVariable Long id) {
-		userService.delete(id);
-	}
-	
 	@PostMapping("logIn")
 	public String logIn(@RequestBody MockUser obj) {
 		String retVal = "";
@@ -104,8 +92,8 @@ public class UserController {
 		String key = userService.generateRandomKey();
 		variables.put("userKey",key);
 		runtimeService.startProcessInstanceByKey("registrationProcess",variables);
-		Task t= taskService.createTaskQuery().active().taskAssignee(key).list().get(0);
 
+		Task t= taskService.createTaskQuery().active().taskAssignee(key).list().get(0);
 		variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
 		obj.setRandomKey(key);
 		variables.put("user", obj);

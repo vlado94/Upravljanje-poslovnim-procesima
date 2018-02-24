@@ -30,6 +30,11 @@ public class JobServiceImpl implements JobService {
 	public Job findOne(Long id) {
 		return repository.findOne(id);
 	}
+	
+	@Override
+	public Job findOneByKey(String key) {
+		return repository.findOneByKey(key);
+	}
 
 	@Override
 	public void delete(Long id) {

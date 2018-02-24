@@ -2,6 +2,8 @@ package upp.job;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 import lombok.Data;
 
@@ -18,5 +20,17 @@ public class MockJob implements Serializable{
 	private Date jobLimit;
 	
 	private int offersLimit;
+	
+	private List<Long> companyIDS;
+	
+	private long userID;
+	
+	private int sentMail;
+	
+	private String jobKey;
+	
+	public MockJob() {
+		companyIDS = new ArrayList<Long>();
+	}
 	
 }

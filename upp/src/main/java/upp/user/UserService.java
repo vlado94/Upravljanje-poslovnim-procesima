@@ -17,6 +17,8 @@ public interface UserService {
 
 	User findOneByRandomKey(String key);
 
+	List<User> findByRole(int role);
+	
 	void delete(Long id);
 	
 	String generateRandomKey();

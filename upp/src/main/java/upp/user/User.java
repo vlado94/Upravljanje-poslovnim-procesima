@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -38,6 +39,7 @@ public class User {
 	//1 for clasic users 
 	//2 for companies
 	private int role;
+	
 	@ManyToMany
 	@JoinTable(name = "COMPANY_CATEGORY", joinColumns = @JoinColumn(name = "COMPANY_ID"), inverseJoinColumns = @JoinColumn(name = "CATEGORY_ID"))
 	private List<Category> categories;
@@ -47,7 +49,9 @@ public class User {
 	
 	private String randomKey;	
 
-	public User() {}
+	public User() {
+		categories = new ArrayList<Category>();
+	}
 	public User(MockUser obj) {
 		name = obj.getName();
 		email = obj.getEmail();

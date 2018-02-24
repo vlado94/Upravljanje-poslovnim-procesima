@@ -11,4 +11,5 @@ public interface JobService {
 
 	Job save(MockJob obj);
 
+	Job findOneByKey(String key);
 }

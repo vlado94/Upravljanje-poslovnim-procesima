@@ -76,6 +76,12 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	@Override
+	public List<User> findByRole(int role) {
+		List<User> retVal = repository.findByRole(role);
+		return retVal;
+	}
+	
+	@Override
 	public User findOneByEmailOrUserName(String email, String userName) {
 		User user = repository.findByEmailOrUserName(email,userName);
 		return user;

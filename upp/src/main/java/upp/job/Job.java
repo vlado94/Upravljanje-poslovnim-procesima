@@ -33,11 +33,17 @@ public class Job {
 	
 	private int offersLimit;
 	
+	private String key;
+	
+	private int howeverSend;
+	
+	public Job() {}
 	public Job(MockJob obj) {
 		descritpion = obj.getDescritpion();
 		maxPrice = obj.getMaxPrice();
 		auctionLimit = obj.getAuctionLimit();
 		jobLimit = obj.getJobLimit();
 		offersLimit = obj.getOffersLimit();
+		key = obj.getJobKey();
 	}
 }

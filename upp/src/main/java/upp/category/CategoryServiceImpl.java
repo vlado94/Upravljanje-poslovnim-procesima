@@ -20,4 +20,9 @@ public class CategoryServiceImpl implements CategoryService {
 	public List<Category> findAll() {
 		return Lists.newArrayList(repository.findAll());
 	}
+
+	@Override
+	public Category findOne(Long id) {
+		return repository.findOne(id);
+	}
 }
