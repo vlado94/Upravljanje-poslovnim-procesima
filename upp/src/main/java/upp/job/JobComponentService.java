@@ -16,6 +16,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
+import lombok.experimental.var;
 import upp.category.Category;
 import upp.category.CategoryService;
 import upp.user.User;
@@ -71,14 +72,16 @@ public class JobComponentService {
 	private List<Long> getRandomCompanies(List<User> foundedCompanies, int numberOfOffers) {
 		Random random = new Random();
 		List<Long> retVal = new ArrayList<Long>();
-		Collections.shuffle(foundedCompanies);
-		
+		for(int i=0;i<foundedCompanies.size();i++)
+			retVal.add(foundedCompanies.get(i).getId());
+		/*Collections.shuffle(foundedCompanies);
+
 		while(numberOfOffers != 0) {
 			int index = random.nextInt(foundedCompanies.size());
 			User item = foundedCompanies.get(index);
 			retVal.add(item.getId());
 			numberOfOffers--;
-		}
+		}*/
 		return retVal;
 	}
 	
@@ -99,23 +102,49 @@ public class JobComponentService {
 	    return distanceMeters/1000;
 	}
 	
-	public MockJob sendMailForNotEnough(MockJob obj) throws MessagingException {
+	public MockJob sendMailForNotEnough(MockJob obj, String processID) throws MessagingException {
 		MimeMessage message = mailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message, true);
-		helper.setFrom("sepftn2017@gmail.com");
+		helper.setFrom("isarestorani@gmail.com");
 		User u = userService.findOne(obj.getUserID());
 		Category c = categoryService.findOne(obj.getCategoryID());
 		helper.setTo(u.getEmail());
 		helper.setSubject("Not enough company for category "+c.getName()+" , choose next step on link.");
-		String text = "For continue: \n localhost:8080/job/decideStatusTrue/"+obj.getJobKey() + " \n\n For terminate: \n localhost:8080/job/decideStatusFalse/"+obj.getJobKey();
+		String text = "For continue: \n localhost:8080/job/decideStatusTrue/"+obj.getJobKey()+"-"+processID+ " \n\n For terminate: \n localhost:8080/job/decideStatusFalse/"+obj.getJobKey();
 		helper.setText(text);
-		//mailSender.send(message);
+		mailSender.send(message);
 		obj.setSentMail(1);
 		return obj;
 	}
 	
-	public void sendMailToComany() {
+	public List<User> prepareCompaniesForNotify(String processID) {
+		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(processID);
+		Job j  = (Job)variables.get("jobObj");
+		return j.getCompanies();
+	}
+	
+	public String sendCompanyMail(User firm) throws MessagingException {
+		MimeMessage message = mailSender.createMimeMessage();
+		MimeMessageHelper helper = new MimeMessageHelper(message, true);
+		helper.setFrom("sepftn2017@gmail.com");
+		helper.setTo(firm.getEmail());
+		helper.setSubject("One more demmand");
+		String text = "You get new demmand, visit your profile.";
+		helper.setText(text);
+		//mailSender.send(message);
+		System.out.println(firm.getEmail());
+		return firm.getCompanyAsignee();		
+	}
+	
+	public void notifyUserEnoughOffers() { 
 		int a = 3;
 		a = 5;
+		
+	}
+	
+	public void notifyUserEnoughNoOffers() { 
+		int a = 3;
+		a = 5;
+		
 	}
 }

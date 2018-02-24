@@ -9,16 +9,14 @@ import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import upp.job.Job;
 
 @RestController
 @RequestMapping("/user")
@@ -65,20 +63,25 @@ public class UserController {
 	}
 	
 	@GetMapping("checkRole")
-	public String checkRole() {
-		String retVal = "";
+	public LogInResponse checkRole() {
+		LogInResponse retVal = new LogInResponse();
 		Object id = httpSession.getAttribute("userID");
 		if(id == null) {
-			retVal = "Redirect";
+			retVal.setRole("Redirect");
 		}
 		else {
 			long userID = (long) id;
 			User u = userService.findOne(userID);
 			if(u.getRole() == 1) {
-				retVal = "User-"+u.getName();				
+				retVal.setRole("User-"+u.getName());				
 			}
 			else if(u.getRole() == 2) {
-				retVal = "Company-"+u.getName();
+				retVal.setRole("Company-"+u.getName());
+				List<Task> tasks = taskService.createTaskQuery().active().taskAssignee(u.getCompanyAsignee()).list();
+				for (Task t : tasks) {
+					HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
+					retVal.getJobs().add((Job)variables.get("jobObj"));
+				}
 			}
 		}
 		return retVal;

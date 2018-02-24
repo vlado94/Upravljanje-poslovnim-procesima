@@ -32,7 +32,48 @@
 	</nav>
 	
 	<div class="container">
-		company page
+		<table class="table table-bordered">
+		    <thead>
+  	      		<tr>
+			        <th>Category</th>
+			        <th>Auction limit</th>
+			        <th>Job limit</th>
+			        <th>Price limit</th>
+			        <th>Action</th>
+		    	</tr>
+		    </thead>
+		    <tbody id="tasksTableBody">
+			</tbody>
+		</table>
+		
+		<div class="row offerForm">
+			<form id="newOfferForm" class="col-sm-offset-3 col-sm-6">
+				<fieldset>
+					<legend>New offer</legend>
+					<input type="hidden" id="jobID" >
+					
+					<div class="form-group">
+						<label class="col-sm-4">End job : </label>
+						<div class="col-sm-8">
+							<input type="date" id="jobEndDate" class="form-control" value="2018-02-28" />
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-4">Job price:</label>
+						<div class="col-sm-8">
+							<input type="text" id="jobPrice" class="form-control" value="200" />
+						</div>
+					</div>
+
+					<div class="col-sm-12">
+						<div class="text-right">
+							<button type="submit" class="btn btn-primary">Save</button>
+						</div>
+					</div>
+				</fieldset>
+			</form>
+		</div>
 	</div>
 </body>
 </html>
