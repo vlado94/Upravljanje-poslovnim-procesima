@@ -34,8 +34,6 @@ public class UserServiceImpl implements UserService {
 		if(obj.getCategories() != null)
 			for(long categoryID : obj.getCategories())
 				user.getCategories().add(categoryRepository.findOne(categoryID));
-		
-		user.setCompanyAsignee(generateRandomKey());
 		return repository.save(user);
 	}
 	

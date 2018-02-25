@@ -32,6 +32,53 @@
 		</div>
 	</nav>
 	<div class="container">
+	
+		<legend>Undefined job status</legend>
+		<table class="table table-bordered">
+		    <thead>
+  	      		<tr>
+			        <th>Task id</th>
+			        <th>Task name</th>
+			        <th>Category</th>
+			        <th>Number of companies</th>
+			        <th>Requested number of companies</th>
+			        <th>Action</th>
+		    	</tr>
+		    </thead>
+		    <tbody id="tasksJobStatusTableBody">
+			</tbody>
+		</table>
+		
+		<legend>Job for confirm</legend>
+		<table class="table table-bordered">
+		    <thead>
+  	      		<tr>
+			        <th>Category</th>
+			        <th>Auction limit</th>
+			        <th>Job limit</th>
+			        <th>Price limit</th>
+			        <th>Action</th>
+		    	</tr>
+		    </thead>
+		    <tbody id="tasksJobForConfirmTableBody">
+			</tbody>
+		</table>
+		
+		<div class="row jobStatus" >
+			<form id="newOfferForm" class="col-sm-offset-3 col-sm-6">
+				<fieldset>
+					<legend>Job status</legend>
+					<input type="hidden" id="taskJobStatusID" >
+					<div class="col-sm-2">
+						<button type="button" onclick="statusJob(1)" class="btn btn-primary">Accept</button>
+					</div>					
+					<div class="col-sm-2">
+						<button type="button" onclick="statusJob(2)" class="btn btn-primary">Quit</button>
+					</div>					
+				</fieldset>
+			</form>			
+		</div>
+		
 		<div id="newJob" class="row">
 			<form id="jobForm" class="col-sm-offset-3 col-sm-6">
 				<fieldset>

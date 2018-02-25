@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import upp.job.Job;
+import upp.job.MockJob;
 
 @RestController
 @RequestMapping("/user")
@@ -73,14 +74,44 @@ public class UserController {
 			long userID = (long) id;
 			User u = userService.findOne(userID);
 			if(u.getRole() == 1) {
+				List<Task> tasks = taskService.createTaskQuery().active().taskAssignee(u.getId().toString()).list();				
+				for (Task t : tasks) {
+					HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
+					Job job = (Job)variables.get("jobObj");
+					MockJob mockJob = (MockJob)variables.get("job");
+					MockJob mock = new MockJob();
+					if(t.getName().equals("Demand status")) {
+						mock.setCategoryName(job.getCategory().getName());
+						mock.setOffersLimit(mockJob.getOffersLimit());
+						mock.setSentMail(mockJob.getCompanyIDS().size());
+					}
+					else if(t.getName().equals("Jobs for confirm")){
+						mock.setJobLimit(job.getJobLimit());
+						mock.setAuctionLimit(job.getAuctionLimit());
+						mock.setCategoryName(job.getCategory().getName());
+						mock.setMaxPrice(job.getMaxPrice());
+					}
+					mock.setTaskID(t.getId());
+					mock.setTaskName(t.getName());
+					retVal.getJobs().add(mock);
+				}
 				retVal.setRole("User-"+u.getName());				
 			}
 			else if(u.getRole() == 2) {
 				retVal.setRole("Company-"+u.getName());
-				List<Task> tasks = taskService.createTaskQuery().active().taskAssignee(u.getCompanyAsignee()).list();
+				List<Task> tasks = taskService.createTaskQuery().active().taskAssignee(u.getId().toString()).list();
 				for (Task t : tasks) {
 					HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
-					retVal.getJobs().add((Job)variables.get("jobObj"));
+					Job job = (Job)variables.get("jobObj");
+					
+					MockJob mock = new MockJob();
+					mock.setJobLimit(job.getJobLimit());
+					mock.setAuctionLimit(job.getAuctionLimit());
+					mock.setCategoryName(job.getCategory().getName());
+					mock.setMaxPrice(job.getMaxPrice());
+					mock.setTaskID(t.getId());
+					mock.setTaskName(t.getName());
+					retVal.getJobs().add(mock);
 				}
 			}
 		}

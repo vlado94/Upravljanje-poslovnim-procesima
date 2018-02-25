@@ -35,7 +35,6 @@ public class User {
 	
 	private int distance;
 	private String companyName;
-	private String companyAsignee;
 	
 	//1 for clasic users 
 	//2 for companies

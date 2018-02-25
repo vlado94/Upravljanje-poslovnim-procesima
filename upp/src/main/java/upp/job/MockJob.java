@@ -10,6 +10,8 @@ import lombok.Data;
 @Data
 public class MockJob implements Serializable{
 	private long categoryID;
+
+	private String categoryName;
 	
 	private String descritpion;
 	
@@ -26,8 +28,9 @@ public class MockJob implements Serializable{
 	private long userID;
 	
 	private int sentMail;
-	
-	private String jobKey;
+
+	private String taskID;
+	private String taskName;
 	
 	public MockJob() {
 		companyIDS = new ArrayList<Long>();

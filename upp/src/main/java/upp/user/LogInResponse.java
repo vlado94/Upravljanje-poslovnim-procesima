@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Data;
-import upp.job.Job;
+import upp.job.MockJob;
 
 @Data
 public class LogInResponse {
 	private String role;
-	private List<Job> jobs;
+	private List<MockJob> jobs;
 	
 	public LogInResponse() {
 		role = "";
-		jobs = new ArrayList<Job>();
+		jobs = new ArrayList<MockJob>();
 	}
 }

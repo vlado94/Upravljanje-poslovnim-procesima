@@ -13,9 +13,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import lombok.Data;
 import upp.category.Category;
+import upp.offer.Offer;
 import upp.user.User;
 
 @Data
@@ -29,7 +31,7 @@ public class Job {
 	@ManyToOne
 	private Category category;
 	
-	private String descritpion;
+	private String description;
 	
 	private double maxPrice;
 	
@@ -39,24 +41,30 @@ public class Job {
 	
 	private int offersLimit;
 	
-	private String key;
-	
 	private int howeverSend;
+	
+	@ManyToOne
+	private User owner;
 	
 	@ManyToMany
 	@JoinTable(name = "JOB_COMPANY", joinColumns = @JoinColumn(name = "JOB_ID"), inverseJoinColumns = @JoinColumn(name = "COMPANY_ID"))
 	private List<User> companies;
 
+	@OneToMany
+	@JoinTable(name = "JOB_OFFER", joinColumns = @JoinColumn(name = "JOB_ID"), inverseJoinColumns = @JoinColumn(name = "OFFER_ID"))
+	private List<Offer> offers;
+
+	
 	public Job() {
 		companies = new ArrayList<User>();
+		offers = new ArrayList<Offer>();
 	}
 	public Job(MockJob obj) {
-		descritpion = obj.getDescritpion();
+		description = obj.getDescritpion();
 		maxPrice = obj.getMaxPrice();
 		auctionLimit = obj.getAuctionLimit();
 		jobLimit = obj.getJobLimit();
 		offersLimit = obj.getOffersLimit();
-		key = obj.getJobKey();
 		companies = new ArrayList<User>();
 	}
 }

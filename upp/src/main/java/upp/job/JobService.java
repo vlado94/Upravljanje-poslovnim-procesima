@@ -2,6 +2,8 @@ package upp.job;
 
 import java.util.List;
 
+import upp.user.User;
+
 public interface JobService {
 	List<Job> findAll();
 
@@ -9,7 +11,9 @@ public interface JobService {
 
 	void delete(Long id);
 
-	Job save(MockJob obj);
+	Job save(MockJob obj,User u);
 
-	Job findOneByKey(String key);
+	Job saveObj(Job obj);
+	
+	Job calculetaRang(Job obj);
 }

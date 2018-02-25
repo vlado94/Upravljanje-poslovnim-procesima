@@ -1,7 +1,6 @@
 package upp.job;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
@@ -16,7 +15,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
-import lombok.experimental.var;
 import upp.category.Category;
 import upp.category.CategoryService;
 import upp.user.User;
@@ -60,7 +58,7 @@ public class JobComponentService {
 			job.setCompanyIDS(getRandomCompanies(validCompanies,job.getOffersLimit()));
 		else 
 			job.setCompanyIDS(new ArrayList<Long>());
-		Job jobObj = jobService.save(job);
+		Job jobObj = jobService.save(job,u);
 		
 		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(executionId);
 
@@ -110,9 +108,9 @@ public class JobComponentService {
 		Category c = categoryService.findOne(obj.getCategoryID());
 		helper.setTo(u.getEmail());
 		helper.setSubject("Not enough company for category "+c.getName()+" , choose next step on link.");
-		String text = "For continue: \n localhost:8080/job/decideStatusTrue/"+obj.getJobKey()+"-"+processID+ " \n\n For terminate: \n localhost:8080/job/decideStatusFalse/"+obj.getJobKey();
+		String text = "Test";//"For continue: \n localhost:8080/job/decideStatusTrue/"+obj.getJobKey()+"-"+processID+ " \n\n For terminate: \n localhost:8080/job/decideStatusFalse/"+obj.getJobKey();
 		helper.setText(text);
-		mailSender.send(message);
+		//mailSender.send(message);
 		obj.setSentMail(1);
 		return obj;
 	}
@@ -132,11 +130,11 @@ public class JobComponentService {
 		String text = "You get new demmand, visit your profile.";
 		helper.setText(text);
 		//mailSender.send(message);
-		System.out.println(firm.getEmail());
-		return firm.getCompanyAsignee();		
+		return firm.getId().toString();		
 	}
 	
-	public void notifyUserEnoughOffers() { 
+	public void notifyUserEnoughOffers(String processID) { 
+		
 		int a = 3;
 		a = 5;
 		
