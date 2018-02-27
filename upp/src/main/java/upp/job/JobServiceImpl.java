@@ -47,13 +47,19 @@ public class JobServiceImpl implements JobService {
 	}
 
 	@Override
-	public Job save(MockJob obj,User u) {
-		Job job = new Job(obj);
-		job.setCategory(categoryRepository.findOne(obj.getCategoryID()));
-		job.setOwner(u);
+	public Job save(MockJob obj,User u,Job j) {
+		Job job = new Job();
+		if(j != null)
+			job = repository.findOne(j.getId());
+		else {
+			job = new Job(obj);
+			job.setCategory(categoryRepository.findOne(obj.getCategoryID()));
+			job.setOwner(u);
+		}
 		if(obj.getCompanyIDS() != null)
 			for(long companyID : obj.getCompanyIDS())
-				job.getCompanies().add(userRepository.findOne(companyID));
+				if(!job.getCompanies().contains(userRepository.findOne(companyID)))
+					job.getCompanies().add(userRepository.findOne(companyID));
 		job = repository.save(job);
 		return job;
 	}

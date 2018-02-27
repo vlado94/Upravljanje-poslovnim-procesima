@@ -85,7 +85,7 @@ public class UserController {
 						mock.setOffersLimit(mockJob.getOffersLimit());
 						mock.setSentMail(mockJob.getCompanyIDS().size());
 					}
-					else if(t.getName().equals("Jobs for confirm")){
+					else if(t.getName().equals("Jobs for confirm") || t.getName().equals("More offer request")|| t.getName().equals("No offers decision")){
 						mock.setJobLimit(job.getJobLimit());
 						mock.setAuctionLimit(job.getAuctionLimit());
 						mock.setCategoryName(job.getCategory().getName());

@@ -11,7 +11,7 @@ public interface JobService {
 
 	void delete(Long id);
 
-	Job save(MockJob obj,User u);
+	Job save(MockJob obj,User u,Job j);
 
 	Job saveObj(Job obj);
 	

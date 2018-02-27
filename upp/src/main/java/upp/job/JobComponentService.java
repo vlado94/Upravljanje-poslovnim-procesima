@@ -1,9 +1,9 @@
 package upp.job;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -33,10 +33,10 @@ public class JobComponentService {
 	private JobService jobService;
 
 	@Autowired
-	private JavaMailSender mailSender;
-	
-	@Autowired
 	private TaskService taskService;
+
+	@Autowired
+	private JavaMailSender mailSender;
 	
 	@Autowired
 	private RuntimeService runtimeService;
@@ -44,6 +44,7 @@ public class JobComponentService {
 	public MockJob defineCompanies(MockJob job, String executionId) {
 		List<User> companies = userService.findByRole(2);
 		List<User> validCompanies = new ArrayList<>();
+		HashMap<String, Object> variables = (HashMap<String, Object>) runtimeService.getVariables(executionId);
 		User u = userService.findOne(job.getUserID());
 		for(int i=0;i<companies.size();i++) {
 			double distance = getDistance(companies.get(i).getLatitude(),u.getLatitude(), companies.get(i).getLongitude(), u.getLongitude(), 0, 0);
@@ -54,32 +55,40 @@ public class JobComponentService {
 				}
 			}
 		}
-		if(validCompanies.size() > 0)
-			job.setCompanyIDS(getRandomCompanies(validCompanies,job.getOffersLimit()));
-		else 
+		if(validCompanies.size() > job.getOffersLimit())
+			job.setCompanyIDS(getRandomCompanies(validCompanies,job.getOffersLimit(),job));
+		else if (validCompanies.size() == 0)
 			job.setCompanyIDS(new ArrayList<Long>());
-		Job jobObj = jobService.save(job,u);
-		
-		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(executionId);
+		else 
+			for(int i=0;i<validCompanies.size();i++)
+				job.getCompanyIDS().add(validCompanies.get(i).getId());
 
+		Job j = (Job)variables.get("jobObj");
+		Job jobObj = jobService.save(job,u,j);
+		
 		variables.put("jobObj", jobObj);
 		runtimeService.setVariables(executionId, variables);
 		return job;
 	}
 	
-	private List<Long> getRandomCompanies(List<User> foundedCompanies, int numberOfOffers) {
-		Random random = new Random();
+	private List<Long> getRandomCompanies(List<User> foundedCompanies, int numberOfOffers, MockJob job) {
 		List<Long> retVal = new ArrayList<Long>();
-		for(int i=0;i<foundedCompanies.size();i++)
-			retVal.add(foundedCompanies.get(i).getId());
-		/*Collections.shuffle(foundedCompanies);
+		List <User> companyForRemove = new ArrayList<User>();
+		for(int i=0;i<job.getCompanyIDS().size();i++)
+			for(int j=0;j<foundedCompanies.size();j++)
+				if((long)job.getCompanyIDS().get(i) == (long)foundedCompanies.get(j).getId())
+					companyForRemove.add(foundedCompanies.get(j));
+		foundedCompanies.removeAll(companyForRemove);
+		/*for(int i=0;i<foundedCompanies.size();i++)
+			if(!job.getCompanyIDS().contains(foundedCompanies.get(i).getId()))
+				retVal.add(foundedCompanies.get(i).getId());
+		*/
+		Collections.shuffle(foundedCompanies);
 
-		while(numberOfOffers != 0) {
-			int index = random.nextInt(foundedCompanies.size());
-			User item = foundedCompanies.get(index);
-			retVal.add(item.getId());
-			numberOfOffers--;
-		}*/
+		for(int i =0;i<foundedCompanies.size();i++) {
+			if(numberOfOffers != retVal.size())
+				retVal.add(foundedCompanies.get(i).getId());
+		}
 		return retVal;
 	}
 	
@@ -135,12 +144,6 @@ public class JobComponentService {
 	
 	public void notifyUserEnoughOffers(String processID) { 
 		
-		int a = 3;
-		a = 5;
-		
-	}
-	
-	public void notifyUserEnoughNoOffers() { 
 		int a = 3;
 		a = 5;
 		

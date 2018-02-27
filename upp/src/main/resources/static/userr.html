@@ -54,6 +54,7 @@
 		    <thead>
   	      		<tr>
 			        <th>Category</th>
+			        <th>Task name</th>
 			        <th>Auction limit</th>
 			        <th>Job limit</th>
 			        <th>Price limit</th>
@@ -64,8 +65,40 @@
 			</tbody>
 		</table>
 		
+		<legend>No enough offers</legend>
+		<table class="table table-bordered">
+		    <thead>
+  	      		<tr>
+			        <th>Category</th>
+			        <th>Task name</th>
+			        <th>Auction limit</th>
+			        <th>Job limit</th>
+			        <th>Price limit</th>
+			        <th>Action</th>
+		    	</tr>
+		    </thead>
+		    <tbody id="tasksNoEnoughOffersTableBody">
+			</tbody>
+		</table>
+		
+		<legend>Zero offers, make decision</legend>
+		<table class="table table-bordered">
+		    <thead>
+  	      		<tr>
+			        <th>Category</th>
+			        <th>Task name</th>
+			        <th>Auction limit</th>
+			        <th>Job limit</th>
+			        <th>Price limit</th>
+			        <th>Action</th>
+		    	</tr>
+		    </thead>
+		    <tbody id="tasksZeroOffersTableBody">
+			</tbody>
+		</table>
+		
 		<div class="row jobStatus" >
-			<form id="newOfferForm" class="col-sm-offset-3 col-sm-6">
+			<form id="newOfferForm" class="col-sm-offset-3 col-sm-6 divToHide">
 				<fieldset>
 					<legend>Job status</legend>
 					<input type="hidden" id="taskJobStatusID" >
@@ -79,8 +112,47 @@
 			</form>			
 		</div>
 		
+		<div class="row jobStatus" >
+			<form id="zeroOffersForm" class="col-sm-offset-3 col-sm-6 divToHide">
+				<fieldset>
+					<legend>Cancel job?</legend>
+					<input type="hidden" id="taskZeroOffersID" >
+					<label class="col-sm-4">Auction limit extend:</label>
+					<div class="col-sm-8">
+						<input type="date" id="auctionLimitForZeroOffers" class="form-control" value="2018-03-04" />
+					</div>
+					
+					<div class="col-sm-2">
+						<button type="button" onclick="cancelZeroOffersJob(1)" class="btn btn-primary">Yes</button>
+					</div>					
+					<div class="col-sm-2">
+						<button type="button" onclick="cancelZeroOffersJob(2)" class="btn btn-primary">No</button>
+					</div>					
+				</fieldset>
+			</form>			
+		</div>
+		
+		<div class="row moreOffers" >
+			<form id="moreOffers" class="col-sm-offset-3 col-sm-6 divToHide">
+				<fieldset>
+					<legend>Job status</legend>
+					<input type="hidden" id="taskMoreOffersStatusID" >
+					<label class="col-sm-4">Auction limit extend:</label>
+					<div class="col-sm-8">
+						<input type="date" id="auctionLimitForNewOffers" class="form-control" value="2018-03-04" />
+					</div>
+					<div class="col-sm-3">
+						<button type="button" onclick="moreOffers(1)" class="btn btn-primary">Accept</button>
+					</div>					
+					<div class="col-sm-3">
+						<button type="button" onclick="moreOffers(2)" class="btn btn-primary">More offers</button>
+					</div>					
+				</fieldset>
+			</form>			
+		</div>
+		
 		<div id="newJob" class="row">
-			<form id="jobForm" class="col-sm-offset-3 col-sm-6">
+			<form id="jobForm" class="col-sm-offset-3 col-sm-6 divToHide">
 				<fieldset>
 					<legend>New demmand</legend>
 					<div class="form-group">
@@ -134,6 +206,23 @@
 				</fieldset>
 			</form>
 		</div>
+		
+		<div id="activeOffers" class="row divToHide">
+			<input type="hidden" id="showOffersForTaskID" />
+			<legend>Offers for demmand</legend>
+			<table class="table table-bordered">
+			    <thead>
+	  	      		<tr>
+				        <th>Seller</th>
+				        <th>Price</th>
+				        <th>Finish demmand</th>
+				        <th>Action</th>
+			    	</tr>
+			    </thead>
+			    <tbody id="offersForTaskTableBody">
+				</tbody>
+			</table>
+		</div>		
 	</div>
 </body>
 </html>
