@@ -36,6 +36,8 @@ public class Job {
 	private double maxPrice;
 	
 	private Date auctionLimit;
+
+	private Date startJobDate;
 	
 	private Date jobLimit;
 	

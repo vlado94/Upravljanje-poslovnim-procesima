@@ -55,7 +55,8 @@ public class JobComponentService {
 				}
 			}
 		}
-		if(validCompanies.size() > job.getOffersLimit())
+
+		if(validCompanies.size() > 0)
 			job.setCompanyIDS(getRandomCompanies(validCompanies,job.getOffersLimit(),job));
 		else if (validCompanies.size() == 0)
 			job.setCompanyIDS(new ArrayList<Long>());
@@ -74,7 +75,11 @@ public class JobComponentService {
 	private List<Long> getRandomCompanies(List<User> foundedCompanies, int numberOfOffers, MockJob job) {
 		List<Long> retVal = new ArrayList<Long>();
 		List <User> companyForRemove = new ArrayList<User>();
-		for(int i=0;i<job.getCompanyIDS().size();i++)
+		/*for(int i=0;i<job.getCompanyIDS().size();i++)
+			for(int j=0;j<foundedCompanies.size();j++)
+				if((long)job.getCompanyIDS().get(i) == (long)foundedCompanies.get(j).getId())
+					companyForRemove.add(foundedCompanies.get(j));*/
+		for(int i=0;i<job.getSendMailsToCompanies().size();i++)
 			for(int j=0;j<foundedCompanies.size();j++)
 				if((long)job.getCompanyIDS().get(i) == (long)foundedCompanies.get(j).getId())
 					companyForRemove.add(foundedCompanies.get(j));
@@ -125,9 +130,19 @@ public class JobComponentService {
 	}
 	
 	public List<User> prepareCompaniesForNotify(String processID) {
+		List<User> retVal = new ArrayList<User>();
 		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(processID);
+		MockJob mock = (MockJob)variables.get("job");
 		Job j  = (Job)variables.get("jobObj");
-		return j.getCompanies();
+		for(int i=0;i<j.getCompanies().size();i++) {
+			if(!mock.getSendMailsToCompanies().contains(j.getCompanies().get(i).getId())) {
+				mock.getSendMailsToCompanies().add(j.getCompanies().get(i).getId());
+				retVal.add(j.getCompanies().get(i));
+			}
+		}
+		variables.put("job", mock);
+		runtimeService.setVariables(processID, variables);
+		return retVal;
 	}
 	
 	public String sendCompanyMail(User firm) throws MessagingException {

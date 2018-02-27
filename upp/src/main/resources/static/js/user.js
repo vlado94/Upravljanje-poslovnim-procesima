@@ -109,7 +109,7 @@ function showOffers(taskID) {
     }).done(function (data) {
     	$("#offersForTaskTableBody").empty();
     	for(i = 0;i<data.offers.length;i++)
-    		$("#offersForTaskTableBody").append('<tr><td>'+data.offers[i].company.name+'</td><td>'+data.offers[i].offerdPrice+'</td><td>'+ data.offers[i].jobFinished+'</td><td><button type="button" onclick=acceptOffer("'+data.offers[i].id+'") class="btn btn-primary">Accept</button></td></tr>');
+    		$("#offersForTaskTableBody").append('<tr><td>'+data.offers[i].company.name+'</td><td>'+data.offers[i].offerdPrice+'</td><td>'+ data.offers[i].jobFinished+'</td><td><button type="button" onclick=acceptOfferFormOpen("'+data.offers[i].company.id+'") class="btn btn-primary">Accept</button></td></tr>');
     })
 }
 
@@ -142,6 +142,50 @@ function cancelZeroOffersJob(flag) {
 	task.auctionLimit = $("#auctionLimitForZeroOffers").val();
 	$.ajax({
         url: "/job/zeroOffersDecision",
+        type: 'POST',
+        data: JSON.stringify(task),
+        contentType: "application/json",
+        dataType : "json"
+    }).done(function (data) {
+    	window.location.reload(true);
+    })
+}
+
+function acceptOfferFormOpen(companyID) {
+	$("#companyForAccept").val(companyID);
+	$(".divToHide").css("display","none");	
+	$("#acceptOfferForm").css("display","block");
+}
+
+
+function acceptOffer() {
+	task = {}
+	task.sentMail = $("#companyForAccept").val();
+	task.taskID = $("#showOffersForTaskID").val();
+	$.ajax({
+        url: "/job/acceptOfferForCompany",
+        type: 'POST',
+        data: JSON.stringify(task),
+        contentType: "application/json",
+        dataType : "json"
+    }).done(function (data) {
+    	window.location.reload(true);
+    })
+}
+
+function moreInfoForAccept() {
+	
+	
+}
+
+
+function repeatJob(flag) {
+		
+	task = {}
+	task.maxPrice = flag;	
+	task.taskID = $("#showOffersForTaskID").val();
+	$.ajax({
+        url: "/job/repeatJob",
         type: 'POST',
         data: JSON.stringify(task),
         contentType: "application/json",

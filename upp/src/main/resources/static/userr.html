@@ -151,6 +151,25 @@
 			</form>			
 		</div>
 		
+		<div class="row" >
+			<form id="acceptOfferForm" class="col-sm-offset-3 col-sm-6 divToHide">
+				<fieldset>
+					<legend>Job accept</legend>
+					<input type="hidden" id="companyForAccept" >
+					<label class="col-sm-4">Job how will be done:</label>
+					<div class="col-sm-8">
+						<input type="text" id="howWillDoJob" class="form-control" value="Describe job to me" />
+					</div>
+					<div class="col-sm-3">
+						<button type="button" onclick="acceptOffer()" class="btn btn-primary">Accept</button>
+					</div>					
+					<div class="col-sm-3">
+						<button type="button" onclick="moreInfoForAccept()" class="btn btn-primary">More info</button>
+					</div>					
+				</fieldset>
+			</form>			
+		</div>
+		
 		<div id="newJob" class="row">
 			<form id="jobForm" class="col-sm-offset-3 col-sm-6 divToHide">
 				<fieldset>
@@ -222,6 +241,14 @@
 			    <tbody id="offersForTaskTableBody">
 				</tbody>
 			</table>
+			<div class="row">
+				<div class="col-sm-2">
+					<button type="button" onclick="repeatJob(1)" class="btn btn-primary">Repeat job</button>
+				</div>					
+				<div class="col-sm-2">
+					<button type="button" onclick="repeatJob(2)" class="btn btn-primary">Cancel job</button>
+				</div>					
+			</div>
 		</div>		
 	</div>
 </body>

@@ -59,6 +59,7 @@ public class JobController {
 
 		variables.put("userID",obj.getUserID());
 		variables.put("job", obj);
+		variables.put("numberOfRepeting", 0);
 		taskService.complete(t.getId(),variables);
 
 		return obj;
@@ -212,5 +213,73 @@ public class JobController {
         
         retVal.setOffers(new ArrayList<Offer>(Arrays.asList(test)));
 		return retVal;
+	}
+	
+	@PostMapping("acceptOfferForCompany")
+	public MockJob acceptOfferForCompany(@RequestBody MockJob obj) {
+		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
+		List<Task> tasks = taskService.createTaskQuery().active().taskAssignee(u.getId().toString()).list();
+		Task t = null;
+		for (Task task : tasks) {
+			if(task.getId().equals(obj.getTaskID())) {
+				t = task;
+				break;
+			}
+		}
+		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
+		variables.put("choosenCompanyID", obj.getSentMail());
+		variables.put("repeatProcess",0);
+		taskService.complete(t.getId(),variables);
+		
+		return obj;
+	}
+	
+	@PostMapping("submitStartDateJob")
+	public MockJob submitStartDateJob(@RequestBody MockJob obj) {
+		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
+		List<Task> tasks = taskService.createTaskQuery().active().taskAssignee(u.getId().toString()).list();
+		Task t = null;
+		for (Task task : tasks) {
+			if(task.getId().equals(obj.getTaskID())) {
+				t = task;
+				break;
+			}
+		}
+		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
+		Job job = (Job) variables.get("jobObj");
+		job.setStartJobDate(obj.getJobLimit());
+		job = jobService.saveObj(job);
+		variables.put("jobObj", job);
+		taskService.complete(t.getId(),variables);		
+		return obj;
+	}
+	
+	@PostMapping("repeatJob")
+	public MockJob repeatJob(@RequestBody MockJob obj) {
+		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
+		List<Task> tasks = taskService.createTaskQuery().active().taskAssignee(u.getId().toString()).list();
+		Task t = null;
+		for (Task task : tasks) {
+			if(task.getId().equals(obj.getTaskID())) {
+				t = task;
+				break;
+			}
+		}
+		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
+		int temp = (int) variables.get("numberOfRepeting");
+		if(temp < 3)
+			temp++;
+		else
+			temp = 3;
+			
+		if(obj.getMaxPrice() == 2)
+			temp = 3;
+		Job j = (Job)variables.get("jobObj");
+		j.setOffers(new ArrayList<Offer>());
+		jobService.saveObj(j);
+		variables.put("numberOfRepeting",temp);
+		variables.put("repeatProcess",1);
+		taskService.complete(t.getId(),variables);		
+		return obj;
 	}
 }

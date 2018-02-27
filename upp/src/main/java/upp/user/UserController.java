@@ -101,16 +101,24 @@ public class UserController {
 				retVal.setRole("Company-"+u.getName());
 				List<Task> tasks = taskService.createTaskQuery().active().taskAssignee(u.getId().toString()).list();
 				for (Task t : tasks) {
+					
 					HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
 					Job job = (Job)variables.get("jobObj");
-					
 					MockJob mock = new MockJob();
-					mock.setJobLimit(job.getJobLimit());
-					mock.setAuctionLimit(job.getAuctionLimit());
-					mock.setCategoryName(job.getCategory().getName());
-					mock.setMaxPrice(job.getMaxPrice());
 					mock.setTaskID(t.getId());
 					mock.setTaskName(t.getName());
+					if(t.getName().equals("Company offer for demmand")) {
+						mock.setJobLimit(job.getJobLimit());
+						mock.setAuctionLimit(job.getAuctionLimit());
+						mock.setCategoryName(job.getCategory().getName());
+						mock.setMaxPrice(job.getMaxPrice());
+					}
+					else if(t.getName().equals("Define start job")) {
+						mock.setJobLimit(job.getJobLimit());
+						mock.setAuctionLimit(job.getAuctionLimit());
+						mock.setCategoryName(job.getCategory().getName());
+						mock.setMaxPrice(job.getMaxPrice());
+					}
 					retVal.getJobs().add(mock);
 				}
 			}

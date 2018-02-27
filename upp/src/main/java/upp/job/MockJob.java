@@ -22,8 +22,10 @@ public class MockJob implements Serializable{
 	private Date jobLimit;
 	
 	private int offersLimit;
-	
+
 	private List<Long> companyIDS;
+
+	private List<Long> sendMailsToCompanies;
 	
 	private long userID;
 	
@@ -34,6 +36,7 @@ public class MockJob implements Serializable{
 	
 	public MockJob() {
 		companyIDS = new ArrayList<Long>();
+		sendMailsToCompanies = new ArrayList<Long>();
 	}
 	
 }
