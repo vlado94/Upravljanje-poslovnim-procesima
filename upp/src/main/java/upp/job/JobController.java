@@ -229,6 +229,7 @@ public class JobController {
 		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
 		variables.put("choosenCompanyID", obj.getSentMail());
 		variables.put("repeatProcess",0);
+		variables.put("describeProcess",0);
 		taskService.complete(t.getId(),variables);
 		
 		return obj;
@@ -250,6 +251,43 @@ public class JobController {
 		job.setStartJobDate(obj.getJobLimit());
 		job = jobService.saveObj(job);
 		variables.put("jobObj", job);
+		taskService.complete(t.getId(),variables);		
+		return obj;
+	}
+	
+	@PostMapping("describeJob")
+	public MockJob describeJob(@RequestBody MockJob obj) {
+		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
+		List<Task> tasks = taskService.createTaskQuery().active().taskAssignee(u.getId().toString()).list();
+		Task t = null;
+		for (Task task : tasks) {
+			if(task.getId().equals(obj.getTaskID())) {
+				t = task;
+				break;
+			}
+		}
+		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
+		variables.put("jobDescription", obj.getDescritpion());
+		taskService.complete(t.getId(),variables);		
+		return obj;
+	}
+	
+	@PostMapping("requestForDescribeJob")
+	public MockJob requestForDescribeJob(@RequestBody MockJob obj) {
+		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
+		List<Task> tasks = taskService.createTaskQuery().active().taskAssignee(u.getId().toString()).list();
+		Task t = null;
+		for (Task task : tasks) {
+			if(task.getId().equals(obj.getTaskID())) {
+				t = task;
+				break;
+			}
+		}
+		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
+		variables.put("jobHowToDoDescription", obj.getDescritpion());
+		variables.put("choosenCompanyID", obj.getSentMail());
+		variables.put("repeatProcess",0);
+		variables.put("describeProcess",1);
 		taskService.complete(t.getId(),variables);		
 		return obj;
 	}
@@ -279,6 +317,7 @@ public class JobController {
 		jobService.saveObj(j);
 		variables.put("numberOfRepeting",temp);
 		variables.put("repeatProcess",1);
+		variables.put("describeProcess",0);
 		taskService.complete(t.getId(),variables);		
 		return obj;
 	}

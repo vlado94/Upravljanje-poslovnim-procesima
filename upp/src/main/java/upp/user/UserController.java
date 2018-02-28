@@ -85,11 +85,19 @@ public class UserController {
 						mock.setOffersLimit(mockJob.getOffersLimit());
 						mock.setSentMail(mockJob.getCompanyIDS().size());
 					}
-					else if(t.getName().equals("Jobs for confirm") || t.getName().equals("More offer request")|| t.getName().equals("No offers decision")){
+					else if(t.getName().equals("Jobs for confirm")  || t.getName().equals("More offer request")|| t.getName().equals("No offers decision")){
 						mock.setJobLimit(job.getJobLimit());
 						mock.setAuctionLimit(job.getAuctionLimit());
 						mock.setCategoryName(job.getCategory().getName());
 						mock.setMaxPrice(job.getMaxPrice());
+					}
+					else if(t.getName().equals("Decide job status with description")) {
+						mock.setJobLimit(job.getJobLimit());
+						mock.setAuctionLimit(job.getAuctionLimit());
+						mock.setCategoryName(job.getCategory().getName());
+						mock.setMaxPrice(job.getMaxPrice());
+						mock.setDescritpion((String)variables.get("jobDescription"));
+						
 					}
 					mock.setTaskID(t.getId());
 					mock.setTaskName(t.getName());
@@ -113,7 +121,7 @@ public class UserController {
 						mock.setCategoryName(job.getCategory().getName());
 						mock.setMaxPrice(job.getMaxPrice());
 					}
-					else if(t.getName().equals("Define start job")) {
+					else if(t.getName().equals("Define start job") || t.getName().equals("Describe process")) {
 						mock.setJobLimit(job.getJobLimit());
 						mock.setAuctionLimit(job.getAuctionLimit());
 						mock.setCategoryName(job.getCategory().getName());

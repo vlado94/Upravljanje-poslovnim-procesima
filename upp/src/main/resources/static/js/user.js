@@ -23,6 +23,9 @@ $(document).ready(function() {
     			else if(data.jobs[i].taskName == "No offers decision"){
     				$("#tasksZeroOffersTableBody").append('<tr><td>'+data.jobs[i].taskName+'</td><td>'+ data.jobs[i].categoryName+'</td><td>'+new Date(data.jobs[i].auctionLimit).toString().substring(0,15)+'</td><td>'+new Date(data.jobs[i].jobLimit).toString().substring(0,15)+'</td><td>'+data.jobs[i].maxPrice+'</td><td><button type="button" onclick=showZeroForm("'+data.jobs[i].taskID+'") class="btn btn-primary">Show</button></td></tr>');
     			}
+    			else if(data.jobs[i].taskName == "Decide job status with description"){
+    				$("#tasksToDescribeBody").append('<tr><td>'+data.jobs[i].taskName+'</td><td>'+ data.jobs[i].categoryName+'</td><td>'+new Date(data.jobs[i].auctionLimit).toString().substring(0,15)+'</td><td>'+new Date(data.jobs[i].jobLimit).toString().substring(0,15)+'</td><td>'+data.jobs[i].maxPrice+'</td><td><button type="button" class="btn btn-primary" onclick=showFormWithDescritpion("'+data.jobs[i].taskID+'","'+data.jobs[i].descritpion+'")>Show</button></td></tr>');
+    			}
     		}
     	}
     })
@@ -174,13 +177,23 @@ function acceptOffer() {
 }
 
 function moreInfoForAccept() {
-	
-	
+	task = {}
+	task.taskID = $("#showOffersForTaskID").val();
+	task.description = $("#howWillDoJob").val();	
+	task.sentMail = $("#companyForAccept").val();
+	$.ajax({
+        url: "/job/requestForDescribeJob",
+        type: 'POST',
+        data: JSON.stringify(task),
+        contentType: "application/json",
+        dataType : "json"
+    }).done(function (data) {
+    	window.location.reload(true);
+    })
 }
 
 
 function repeatJob(flag) {
-		
 	task = {}
 	task.maxPrice = flag;	
 	task.taskID = $("#showOffersForTaskID").val();
@@ -193,4 +206,16 @@ function repeatJob(flag) {
     }).done(function (data) {
     	window.location.reload(true);
     })
+}
+
+function showFormWithDescritpion(taskID,desc) {
+	$("#acceptJobWithDescritpionTaskID").val(taskID);
+	$("#descriptionDone").val(desc)
+	$(".divToHide").css("display","none");	
+	$("#decriptionForm").css("display","block");
+}
+
+
+function defineStatusAfterDesc(flag) {
+	showMessage("todo");'
 }

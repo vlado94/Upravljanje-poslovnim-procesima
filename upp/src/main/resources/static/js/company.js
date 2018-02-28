@@ -14,8 +14,13 @@ $(document).ready(function() {
     				$("#tasksTableBody").append('<tr><td>'+ data.jobs[i].categoryName+'</td><td>'+new Date(data.jobs[i].auctionLimit).toString().substring(0,15)+'</td><td>'+new Date(data.jobs[i].jobLimit).toString().substring(0,15)+'</td><td>'+data.jobs[i].maxPrice+'</td><td><button type="button" onclick=showJobForm("'+data.jobs[i].taskID+'") class="btn btn-primary">Accept</button></td></tr>');
     			}  
     			if(data.jobs[i].taskName == "Define start job") {
-    				$("#tasksAcceptableJobs").append('<tr><td>'+ data.jobs[i].categoryName+'</td><td>'+new Date(data.jobs[i].auctionLimit).toString().substring(0,15)+'</td><td>'+new Date(data.jobs[i].jobLimit).toString().substring(0,15)+'</td><td>'+data.jobs[i].maxPrice+'</td><td><button type="button" onclick=showAcceptJobForm("'+data.jobs[i].taskID+'") class="btn btn-primary">Set form</button></td></tr>');
+    				$("#tasksAcceptableJobs").append('<tr><td>'+ data.jobs[i].categoryName+'</td><td>'+new Date(data.jobs[i].auctionLimit).toString().substring(0,15)+'</td><td>'+new Date(data.jobs[i].jobLimit).toString().substring(0,15)+'</td><td>'+data.jobs[i].maxPrice+'</td><td><button type="button" onclick=showAcceptJobForm("'+data.jobs[i].taskID+'") class="btn btn-primary">Set date</button></td></tr>');
     			}  
+    			if(data.jobs[i].taskName == "Describe process") {
+    				$("#tasksForDescribeJobs").append('<tr><td>'+ data.jobs[i].categoryName+'</td><td>'+new Date(data.jobs[i].auctionLimit).toString().substring(0,15)+'</td><td>'+new Date(data.jobs[i].jobLimit).toString().substring(0,15)+'</td><td>'+data.jobs[i].maxPrice+'</td><td><button type="button" onclick=showDescribeJobForm("'+data.jobs[i].taskID+'") class="btn btn-primary">Describe</button></td></tr>');
+    			}  
+    			
+    			
     		}
     	}
     })
@@ -59,7 +64,26 @@ function submitStartJob() {
         contentType: "application/json",
     }).done(function (data) {
     	window.location.reload();
-    })
-	
-	
+    })	
 }
+
+function showDescribeJobForm(taskID) {
+	$("#taskDescribeJobID").val(taskID);	
+	$(".forms").css("display","none");
+	$(".describeJobForm").css("display","block");
+}
+
+function submitJobDescription() {
+	job = {}
+	job.taskID = $("#taskDescribeJobID").val();
+	job.descritpion = $("#jobDescription").val();
+	$.ajax({
+        url: "/job/describeJob",
+        type: 'POST',
+        data: JSON.stringify(job),
+        contentType: "application/json",
+    }).done(function (data) {
+    	window.location.reload();
+    })	
+}
+
