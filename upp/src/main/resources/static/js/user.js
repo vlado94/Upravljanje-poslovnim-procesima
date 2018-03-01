@@ -217,5 +217,16 @@ function showFormWithDescritpion(taskID,desc) {
 
 
 function defineStatusAfterDesc(flag) {
-	showMessage("todo");'
+	task = {}
+	task.offersLimit = flag;	
+	task.taskID = $("#acceptJobWithDescritpionTaskID").val();
+	$.ajax({
+        url: "/job/acceptWithDescription",
+        type: 'POST',
+        data: JSON.stringify(task),
+        contentType: "application/json",
+        dataType : "json"
+    }).done(function (data) {
+    	window.location.reload(true);
+    })
 }

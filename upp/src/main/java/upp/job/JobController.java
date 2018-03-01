@@ -321,4 +321,28 @@ public class JobController {
 		taskService.complete(t.getId(),variables);		
 		return obj;
 	}
+	
+	@PostMapping("acceptWithDescription")
+	public MockJob acceptWithDescription(@RequestBody MockJob obj) {
+		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
+		List<Task> tasks = taskService.createTaskQuery().active().taskAssignee(u.getId().toString()).list();
+		Task t = null;
+		for (Task task : tasks) {
+			if(task.getId().equals(obj.getTaskID())) {
+				t = task;
+				break;
+			}
+		}
+		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
+		variables.put("acceptDescribedJob",obj.getOffersLimit());
+		if(obj.getOffersLimit() == 1) {
+
+			Job j = (Job)variables.get("jobObj");
+			j.setOwner(userService.findOne((long)variables.get("choosenCompanyID")));
+			variables.put("jobObj",j);
+			jobService.saveObj(j);
+		}
+		taskService.complete(t.getId(),variables);		
+		return obj;
+	}
 }
