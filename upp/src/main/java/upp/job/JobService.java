@@ -15,5 +15,5 @@ public interface JobService {
 
 	Job saveObj(Job obj);
 	
-	Job calculetaRang(Job obj);
+	int calculetaRang(long jID,long uID,double offerdPrice);
 }

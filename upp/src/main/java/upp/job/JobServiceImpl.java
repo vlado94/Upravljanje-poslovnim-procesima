@@ -1,5 +1,7 @@
 package upp.job;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 
 import upp.category.CategoryRepository;
+import upp.offer.Offer;
 import upp.user.User;
 import upp.user.UserRepository;
 
@@ -65,8 +68,36 @@ public class JobServiceImpl implements JobService {
 	}
 
 	@Override
-	public Job calculetaRang(Job obj) {
+	public int calculetaRang(long jID,long uID,double offerdPrice) {
 		
-		return obj;
+		int retVal = 0;
+		Job job = repository.findOne(jID);
+		Offer newOffer = new Offer();
+		newOffer.setCompany(userRepository.findOne(uID));
+		newOffer.setOfferdPrice(offerdPrice);
+		job.getOffers().add(newOffer);
+		Offer[] test = (Offer[]) job.getOffers().toArray(new Offer[job.getOffers().size()]);
+		Offer temp = new Offer();  
+		for(int i=0; i < test.length; i++){  
+            for(int j=1; j < (test.length-i); j++){  
+                 if(test[j-1].getOfferdPrice() > test[j].getOfferdPrice()){  
+               	 temp = test[j-1];  
+                    test[j-1] = test[j];  
+                    test[j] = temp;  
+                }                        
+            }  
+       }  
+       job.setOffers(new ArrayList<Offer>(Arrays.asList(test)));
+       for(int i=0; i < job.getOffers().size(); i++){  
+    	   if(job.getOffers().get(i).getCompany().getId() == uID) 
+    		   retVal = i;
+       }
+       for(int i=0; i < job.getOffers().size(); i++){  
+    	   if(job.getOffers().get(i).getId() == null) 
+    		   job.getOffers().remove(i);
+       }
+       
+       retVal += 1;
+       return retVal;
 	}
 }

@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpSession;
 
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
@@ -40,6 +41,10 @@ public class JobComponentService {
 	
 	@Autowired
 	private RuntimeService runtimeService;
+	
+
+	@Autowired
+	private HttpSession httpSession;
 	
 	public MockJob defineCompanies(MockJob job, String executionId) {
 		List<User> companies = userService.findByRole(2);
@@ -155,5 +160,15 @@ public class JobComponentService {
 		helper.setText(text);
 		//mailSender.send(message);
 		return firm.getId().toString();		
+	}
+	
+	public String calculateRangForOffer(String processID,Job jobObj) {
+		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
+		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(processID);
+		int rank = jobService.calculetaRang(jobObj.getId(),u.getId(),(double)variables.get("currentOffer"));
+		variables.put("currentRank",""+ rank);
+		variables.put("currentProcess", processID);
+		runtimeService.setVariables(processID, variables);
+		return u.getId().toString();
 	}
 }

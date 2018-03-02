@@ -22,7 +22,9 @@ $(document).ready(function() {
     			else if(data.jobs[i].taskName == "Add degree for user"){
     				$("#tasksGiveDegreeUserBody").append('<tr><td>'+ data.jobs[i].categoryName+'</td><td>'+data.jobs[i].descritpion+'</td><td><button type="button" class="btn btn-primary" onclick=showFormForDegree("'+data.jobs[i].taskID+'")>Show</button></td></tr>');
     			}
-    			
+    			else if(data.jobs[i].taskName == "Confirm offer"){
+    				$("#tasksConfirmOfferRankBody").append('<tr><td>'+ data.jobs[i].categoryName+'</td><td>'+data.jobs[i].offersLimit+'</td><td><button type="button" class="btn btn-primary" onclick=confirmOfferRank("'+data.jobs[i].descritpion+'")>Accept</button><button type="button" class="btn btn-primary" onclick=declineOfferRank("'+data.jobs[i].descritpion+'")>Decline</button></td></tr>');
+    			}    			
     			
     		}
     	}
@@ -46,7 +48,7 @@ function sendOffer() {
         data: JSON.stringify(job),
         contentType: "application/json",
     }).done(function (data) {
-    	showMessage("ok");
+    	window.location.reload();
     })
 }
 
@@ -100,6 +102,34 @@ function giveDegree() {
 	task.companyToUserDegreeField = $("#userDegree").val();	
 	$.ajax({
         url: "/job/companyToUserDegree/"+$("#taskForDegreUserID").val(),
+        type: 'POST',
+        data: JSON.stringify(task),
+        contentType: "application/json",
+        dataType : "json"
+    }).done(function (data) {
+    	window.location.reload(true);
+    })
+}
+
+function confirmOfferRank(processID) {
+	task = {}
+	task.jobConfirmWithRangField = "1"
+	$.ajax({
+        url: "/job/confirmOfferRank/"+processID,
+        type: 'POST',
+        data: JSON.stringify(task),
+        contentType: "application/json",
+        dataType : "json"
+    }).done(function (data) {
+    	window.location.reload(true);
+    })
+}
+
+function declineOfferRank(processID) {
+	task = {}
+	task.jobConfirmWithRangField = "0"
+	$.ajax({
+        url: "/job/declineOfferRank/"+processID,
         type: 'POST',
         data: JSON.stringify(task),
         contentType: "application/json",

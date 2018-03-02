@@ -144,25 +144,43 @@ public class JobController {
 	}
 	
 	@PostMapping("sendOffer")
-	public MockJob sendOffer(@RequestBody MockJob obj) {
+	public String sendOffer(@RequestBody MockJob obj) {
 		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
 		Task t = getAppropriateTask(u.getId(),obj.getTaskID());
+		String retVal = "";
+		if(t != null) {
+			HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
+			variables.put("currentOffer",obj.getMaxPrice());
+			variables.put("currentJobFinisherOffer",obj.getJobLimit());
+			taskService.complete(t.getId(),variables);
+			variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
+			retVal = (String) variables.get("currentRank");
+			retVal += "-" + (String) variables.get("currentProcess");
+		}
+		return retVal;
+	}
+	
+	@PostMapping("confirmFinalOffer")
+	public String confirmFinalOffer(@RequestBody MockJob obj) {
+		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
+		Task t = getAppropriateTask(u.getId(),obj.getTaskID());
+		String retVal = "";
 		if(t != null) {
 			HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
 			Job job = jobService.findOne(((Job)variables.get("jobObj")).getId());
 			Offer o = new Offer();
 			o.setCompany(u);
-			o.setJobFinished(obj.getJobLimit());
-			o.setOfferdPrice(obj.getMaxPrice());
+			o.setJobFinished((Date)variables.get("currentOffer"));
+			o.setOfferdPrice((double)variables.get("currentJobFinisherOffer"));
 			o.setTaskID(t.getId());
  			o = offerService.save(o);
 			job.getOffers().add(o);
-			job = jobService.calculetaRang(job);
 			job = jobService.saveObj(job);
 			variables.put("jobObj",job);
 			taskService.complete(t.getId(),variables);
+			retVal = (String) variables.get("rank");
 		}
-		return obj;
+		return retVal;
 	}
 	
 	@PostMapping("showOffers")
@@ -317,5 +335,49 @@ public class JobController {
 		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
 		runtimeService.setVariables(t.getProcessInstanceId(), variables);
 		formService.submitTaskFormData(taskId, params);	
+	}
+	
+	@PostMapping("confirmOfferRank/{processID}")
+	public void confirmOfferRank(@PathVariable String processID,@RequestBody Map<String, String> params){
+		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
+		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(processID);
+		Task t = null;
+		List<Task> tasks = taskService.createTaskQuery().active().taskAssignee(Long.toString(u.getId())).list();
+		for (Task task : tasks) {
+			if(task.getName().equals("Confirm offer")) {
+				t = task;
+				break;
+			}
+		}
+		Job job = jobService.findOne(((Job)variables.get("jobObj")).getId());
+		Offer o = new Offer();
+		o.setCompany(u);
+		o.setOfferdPrice(((Double)variables.get("currentOffer")).doubleValue());
+		o.setJobFinished(new java.sql.Date(((java.util.Date)variables.get("currentJobFinisherOffer")).getTime()));
+		o.setTaskID(t.getId());
+		o = offerService.save(o);
+		job.getOffers().add(o);
+		job = jobService.saveObj(job);
+		variables.put("jobObj",job);
+		variables.put("jobConfirmWithRang", 1);
+		runtimeService.setVariables(processID, variables);
+		formService.submitTaskFormData(t.getId(), params);	
+	}
+
+	@PostMapping("declineOfferRank/{processID}")
+	public void declineOfferRank(@PathVariable String processID,@RequestBody Map<String, String> params){
+		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
+		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(processID);
+		Task t = null;
+		List<Task> tasks = taskService.createTaskQuery().active().taskAssignee(Long.toString(u.getId())).list();
+		for (Task task : tasks) {
+			if(task.getName().equals("Confirm offer")) {
+				t = task;
+				break;
+			}
+		}
+		variables.put("jobConfirmWithRang", 0);
+		runtimeService.setVariables(processID, variables);
+		formService.submitTaskFormData(t.getId(), params);	
 	}
 }

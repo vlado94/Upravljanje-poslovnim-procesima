@@ -124,6 +124,7 @@ public class UserController {
 						mock.setCategoryName(job.getCategory().getName());						
 					}
 					
+					
 					mock.setTaskID(t.getId());
 					mock.setTaskName(t.getName());
 					retVal.getJobs().add(mock);
@@ -155,6 +156,11 @@ public class UserController {
 					else if(t.getName().equals("Add degree for user")) {
 						mock.setDescritpion(job.getOwner().getName());
 						mock.setCategoryName(job.getCategory().getName());						
+					}
+					else if(t.getName().equals("Confirm offer")) {
+						mock.setCategoryName(job.getCategory().getName());						
+						mock.setDescritpion((String)variables.get("currentProcess"));
+						mock.setOffersLimit(Integer.parseInt((String)variables.get("currentRank")));
 					}
 					retVal.getJobs().add(mock);
 				}
@@ -206,6 +212,7 @@ public class UserController {
 		}
 		return retVal;
 	}
+	
 	@GetMapping("/confirmRegistration/{key}")
 	public void confirmRegistration(@PathVariable String key) {
 		HashMap<String, Object> variables=new HashMap<>();
