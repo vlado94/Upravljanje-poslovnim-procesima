@@ -35,6 +35,18 @@ public class UserController {
 	@Autowired
 	private TaskService taskService;
 	
+	private Task getAppropriateTask(long assignee,String taskID) {
+		Task retVal = null;
+		List<Task> tasks = taskService.createTaskQuery().active().taskAssignee(Long.toString(assignee)).list();
+		for (Task task : tasks) {
+			if(task.getId().equals(taskID)) {
+				retVal = task;
+				break;
+			}
+		}
+		return retVal;		
+	}
+	
 	@PostMapping("logIn")
 	public String logIn(@RequestBody MockUser obj) {
 		String retVal = "";

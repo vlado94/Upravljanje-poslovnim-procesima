@@ -90,10 +90,14 @@ function showMoreOffersForm(taskID) {
 
 function statusJob(flag) {
 	task = {}
-	task.offersLimit = flag;
-	task.taskID = $("#taskJobStatusID").val();
+	if(flag == 1) {
+		task.accept = "yes";		
+	}
+	else {
+		task.accept = "no";
+	}
 	$.ajax({
-        url: "/job/statusSet",
+        url: "/job/statusSet/"+$("#taskJobStatusID").val(),
         type: 'POST',
         data: JSON.stringify(task),
         contentType: "application/json",

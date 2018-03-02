@@ -4,14 +4,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
+import org.activiti.engine.FormService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,6 +46,9 @@ public class JobController {
 
 	@Autowired
 	private TaskService taskService;
+
+	@Autowired
+	private FormService formService;
 	
 	@PostMapping
 	public MockJob add(@RequestBody MockJob obj) {
@@ -65,42 +71,42 @@ public class JobController {
 		return obj;
 	}	
 	
-	@PostMapping("statusSet")
-	public void statusSet(@RequestBody MockJob obj) {
+	@PostMapping("statusSet/{taskId}")
+	public void statusSet(@PathVariable String taskId,@RequestBody Map<String, String> params) {
 		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
-		List<Task> tasks = taskService.createTaskQuery().active().taskAssignee(u.getId().toString()).list();
-		
-		Task t = null;
-		for (Task task : tasks) {
-			if(task.getId().equals(obj.getTaskID())) {
-				t = task;
-				break;
-			}
-		}
+		Task t = getAppropriateTask(u.getId(),taskId);
 		HashMap<String, Object> variables = (HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
-		if(obj.getOffersLimit() == 2) {
+
+		if(params.get("accept") == "no") {
 			variables.put("howeverSend", 0);
 			Job j = jobService.findOne(((Job)variables.get("jobObj")).getId());
 			jobService.delete(j.getId());
 		}
 		else {
 			variables.put("howeverSend", 1);			
+		}		
+		
+		runtimeService.setVariables(t.getProcessInstanceId(), variables);
+		formService.submitTaskFormData(taskId, params);
+
+	}
+	
+	private Task getAppropriateTask(long assignee,String taskID) {
+		Task retVal = null;
+		List<Task> tasks = taskService.createTaskQuery().active().taskAssignee(Long.toString(assignee)).list();
+		for (Task task : tasks) {
+			if(task.getId().equals(taskID)) {
+				retVal = task;
+				break;
+			}
 		}
-		taskService.complete(t.getId(),variables);
+		return retVal;		
 	}
 	
 	@PostMapping("moreOffers")
 	public void moreOffers(@RequestBody MockJob obj) {
 		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
-		List<Task> tasks = taskService.createTaskQuery().active().taskAssignee(u.getId().toString()).list();
-		
-		Task t = null;
-		for (Task task : tasks) {
-			if(task.getId().equals(obj.getTaskID())) {
-				t = task;
-				break;
-			}
-		}
+		Task t = getAppropriateTask(u.getId(),obj.getTaskID());
 		HashMap<String, Object> variables = (HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
 		if(obj.getOffersLimit() == 1) {
 			variables.put("acceptOffers", 1);
@@ -118,15 +124,7 @@ public class JobController {
 	@PostMapping("zeroOffersDecision")
 	public void zeroOffersDecision(@RequestBody MockJob obj) {
 		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
-		List<Task> tasks = taskService.createTaskQuery().active().taskAssignee(u.getId().toString()).list();
-		
-		Task t = null;
-		for (Task task : tasks) {
-			if(task.getId().equals(obj.getTaskID())) {
-				t = task;
-				break;
-			}
-		}
+		Task t = getAppropriateTask(u.getId(),obj.getTaskID());
 		HashMap<String, Object> variables = (HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
 		if(obj.getOffersLimit() == 2) {
 			variables.put("noOffersCancelProces", 1);
@@ -145,16 +143,7 @@ public class JobController {
 	@PostMapping("sendOffer")
 	public MockJob sendOffer(@RequestBody MockJob obj) {
 		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
-		
-		List<Task> tasks = taskService.createTaskQuery().active().taskAssignee(u.getId().toString()).list();
-		
-		Task t = null;
-		for (Task task : tasks) {
-			if(task.getId().equals(obj.getTaskID())) {
-				t = task;
-				break;
-			}
-		}
+		Task t = getAppropriateTask(u.getId(),obj.getTaskID());
 		if(t != null) {
 			HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
 			Job job = jobService.findOne(((Job)variables.get("jobObj")).getId());
@@ -177,16 +166,7 @@ public class JobController {
 	public Job showOffers(@RequestBody MockJob obj) {
 		Job retVal = null;
 		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
-		
-		List<Task> tasks = taskService.createTaskQuery().active().taskAssignee(u.getId().toString()).list();
-		
-		Task t = null;
-		for (Task task : tasks) {
-			if(task.getId().equals(obj.getTaskID())) {
-				t = task;
-				break;
-			}
-		}
+		Task t = getAppropriateTask(u.getId(),obj.getTaskID());
 		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
 		retVal = jobService.findOne(((Job)variables.get("jobObj")).getId());
 		Offer[] test = (Offer[]) retVal.getOffers().toArray(new Offer[retVal.getOffers().size()]);
@@ -238,14 +218,7 @@ public class JobController {
 	@PostMapping("submitStartDateJob")
 	public MockJob submitStartDateJob(@RequestBody MockJob obj) {
 		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
-		List<Task> tasks = taskService.createTaskQuery().active().taskAssignee(u.getId().toString()).list();
-		Task t = null;
-		for (Task task : tasks) {
-			if(task.getId().equals(obj.getTaskID())) {
-				t = task;
-				break;
-			}
-		}
+		Task t = getAppropriateTask(u.getId(),obj.getTaskID());
 		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
 		Job job = (Job) variables.get("jobObj");
 		job.setStartJobDate(obj.getJobLimit());
@@ -258,14 +231,7 @@ public class JobController {
 	@PostMapping("describeJob")
 	public MockJob describeJob(@RequestBody MockJob obj) {
 		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
-		List<Task> tasks = taskService.createTaskQuery().active().taskAssignee(u.getId().toString()).list();
-		Task t = null;
-		for (Task task : tasks) {
-			if(task.getId().equals(obj.getTaskID())) {
-				t = task;
-				break;
-			}
-		}
+		Task t = getAppropriateTask(u.getId(),obj.getTaskID());
 		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
 		variables.put("jobDescription", obj.getDescritpion());
 		taskService.complete(t.getId(),variables);		
@@ -275,14 +241,7 @@ public class JobController {
 	@PostMapping("requestForDescribeJob")
 	public MockJob requestForDescribeJob(@RequestBody MockJob obj) {
 		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
-		List<Task> tasks = taskService.createTaskQuery().active().taskAssignee(u.getId().toString()).list();
-		Task t = null;
-		for (Task task : tasks) {
-			if(task.getId().equals(obj.getTaskID())) {
-				t = task;
-				break;
-			}
-		}
+		Task t = getAppropriateTask(u.getId(),obj.getTaskID());
 		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
 		variables.put("jobHowToDoDescription", obj.getDescritpion());
 		variables.put("choosenCompanyID", obj.getSentMail());
@@ -295,14 +254,7 @@ public class JobController {
 	@PostMapping("repeatJob")
 	public MockJob repeatJob(@RequestBody MockJob obj) {
 		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
-		List<Task> tasks = taskService.createTaskQuery().active().taskAssignee(u.getId().toString()).list();
-		Task t = null;
-		for (Task task : tasks) {
-			if(task.getId().equals(obj.getTaskID())) {
-				t = task;
-				break;
-			}
-		}
+		Task t = getAppropriateTask(u.getId(),obj.getTaskID());
 		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
 		int temp = (int) variables.get("numberOfRepeting");
 		if(temp < 3)
@@ -325,14 +277,7 @@ public class JobController {
 	@PostMapping("acceptWithDescription")
 	public MockJob acceptWithDescription(@RequestBody MockJob obj) {
 		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
-		List<Task> tasks = taskService.createTaskQuery().active().taskAssignee(u.getId().toString()).list();
-		Task t = null;
-		for (Task task : tasks) {
-			if(task.getId().equals(obj.getTaskID())) {
-				t = task;
-				break;
-			}
-		}
+		Task t = getAppropriateTask(u.getId(),obj.getTaskID());
 		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
 		variables.put("acceptDescribedJob",obj.getOffersLimit());
 		if(obj.getOffersLimit() == 1) {
@@ -349,14 +294,7 @@ public class JobController {
 	@PostMapping("companyToUserDegree")
 	public MockJob companyToUserDegree(@RequestBody MockJob obj) {
 		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
-		List<Task> tasks = taskService.createTaskQuery().active().taskAssignee(u.getId().toString()).list();
-		Task t = null;
-		for (Task task : tasks) {
-			if(task.getId().equals(obj.getTaskID())) {
-				t = task;
-				break;
-			}
-		}
+		Task t = getAppropriateTask(u.getId(),obj.getTaskID());
 		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
 		int cID = (int)variables.get("choosenCompanyID");
 		User uu = userService.findOne(Long.valueOf(cID).longValue());
@@ -370,14 +308,7 @@ public class JobController {
 	@PostMapping("userToCompanyDegree")
 	public MockJob userToCompanyDegree(@RequestBody MockJob obj) {
 		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
-		List<Task> tasks = taskService.createTaskQuery().active().taskAssignee(u.getId().toString()).list();
-		Task t = null;
-		for (Task task : tasks) {
-			if(task.getId().equals(obj.getTaskID())) {
-				t = task;
-				break;
-			}
-		}
+		Task t = getAppropriateTask(u.getId(),obj.getTaskID());
 		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
 		User uu = userService.findOne((long)variables.get("userID"));
 		uu.setDegreeCount(uu.getDegreeCount() + 1);
@@ -391,14 +322,7 @@ public class JobController {
 	@PostMapping("completeJobFromUser")
 	public MockJob completeJobFromUser(@RequestBody MockJob obj) {
 		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
-		List<Task> tasks = taskService.createTaskQuery().active().taskAssignee(u.getId().toString()).list();
-		Task t = null;
-		for (Task task : tasks) {
-			if(task.getId().equals(obj.getTaskID())) {
-				t = task;
-				break;
-			}
-		}
+		Task t = getAppropriateTask(u.getId(),obj.getTaskID());
 		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
 		
 		taskService.complete(t.getId(),variables);		

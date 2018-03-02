@@ -122,7 +122,7 @@ public class JobComponentService {
 		Category c = categoryService.findOne(obj.getCategoryID());
 		helper.setTo(u.getEmail());
 		helper.setSubject("Not enough company for category "+c.getName()+" , choose next step on link.");
-		String text = "Test";//"For continue: \n localhost:8080/job/decideStatusTrue/"+obj.getJobKey()+"-"+processID+ " \n\n For terminate: \n localhost:8080/job/decideStatusFalse/"+obj.getJobKey();
+		String text = "Visit your profile, no enough offers";
 		helper.setText(text);
 		//mailSender.send(message);
 		obj.setSentMail(1);
