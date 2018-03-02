@@ -1,5 +1,6 @@
 package upp.job;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -85,10 +86,8 @@ public class JobController {
 		else {
 			variables.put("howeverSend", 1);			
 		}		
-		
 		runtimeService.setVariables(t.getProcessInstanceId(), variables);
 		formService.submitTaskFormData(taskId, params);
-
 	}
 	
 	private Task getAppropriateTask(long assignee,String taskID) {
@@ -103,41 +102,45 @@ public class JobController {
 		return retVal;		
 	}
 	
-	@PostMapping("moreOffers")
-	public void moreOffers(@RequestBody MockJob obj) {
+	@PostMapping("moreOffers/{taskId}")
+	public void moreOffers(@PathVariable String taskId,@RequestBody Map<String, String> params) {
 		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
-		Task t = getAppropriateTask(u.getId(),obj.getTaskID());
+		Task t = getAppropriateTask(u.getId(),taskId);
 		HashMap<String, Object> variables = (HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
-		if(obj.getOffersLimit() == 1) {
+		if(params.get("acceptOffersField").equals("yes")) {
 			variables.put("acceptOffers", 1);
 		}
 		else {
 			Job j = jobService.findOne(((Job)variables.get("jobObj")).getId());
-			j.setAuctionLimit(obj.getAuctionLimit());
+			String[] date = params.get("auctionLimitField").split("-");
+			j.setAuctionLimit(new Date(Integer.parseInt(date[0]),Integer.parseInt(date[1]),Integer.parseInt(date[2])));
 			variables.put("acceptOffers", 0);	
 			j = jobService.saveObj(j);
 			variables.put("jobObj", j);			
 		}
-		taskService.complete(t.getId(),variables);
+		runtimeService.setVariables(t.getProcessInstanceId(), variables);
+		formService.submitTaskFormData(taskId, params);
 	}
 	
-	@PostMapping("zeroOffersDecision")
-	public void zeroOffersDecision(@RequestBody MockJob obj) {
+	@PostMapping("zeroOffersDecision/{taskId}")
+	public void zeroOffersDecision(@PathVariable String taskId,@RequestBody Map<String, String> params) {
 		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
-		Task t = getAppropriateTask(u.getId(),obj.getTaskID());
+		Task t = getAppropriateTask(u.getId(),taskId);
 		HashMap<String, Object> variables = (HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
-		if(obj.getOffersLimit() == 2) {
+		if(params.get("extendTime").equals("no")) {
 			variables.put("noOffersCancelProces", 1);
 		}
 		else {
 			variables.put("noOffersCancelProces", 0);
 
 			Job j = jobService.findOne(((Job)variables.get("jobObj")).getId());
-			j.setAuctionLimit(obj.getAuctionLimit());
+			String[] date = params.get("timeForExtendZeroOffers").split("-");
+			j.setAuctionLimit(new Date(Integer.parseInt(date[0]),Integer.parseInt(date[1]),Integer.parseInt(date[2])));
 			variables.put("acceptOffers", 0);	
 			j = jobService.saveObj(j);
 		}
-		taskService.complete(t.getId(),variables);
+		runtimeService.setVariables(t.getProcessInstanceId(), variables);
+		formService.submitTaskFormData(taskId, params);
 	}
 	
 	@PostMapping("sendOffer")
@@ -195,24 +198,16 @@ public class JobController {
 		return retVal;
 	}
 	
-	@PostMapping("acceptOfferForCompany")
-	public MockJob acceptOfferForCompany(@RequestBody MockJob obj) {
+	@PostMapping("acceptOfferForCompany/{taskId}")
+	public void acceptOfferForCompany(@PathVariable String taskId,@RequestBody Map<String, String> params){
 		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
-		List<Task> tasks = taskService.createTaskQuery().active().taskAssignee(u.getId().toString()).list();
-		Task t = null;
-		for (Task task : tasks) {
-			if(task.getId().equals(obj.getTaskID())) {
-				t = task;
-				break;
-			}
-		}
+		Task t = getAppropriateTask(u.getId(),taskId);
 		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
-		variables.put("choosenCompanyID", obj.getSentMail());
+		variables.put("choosenCompanyID", params.get("choosenCompanyIDField"));
 		variables.put("repeatProcess",0);
 		variables.put("describeProcess",0);
-		taskService.complete(t.getId(),variables);
-		
-		return obj;
+		runtimeService.setVariables(t.getProcessInstanceId(), variables);
+		formService.submitTaskFormData(taskId, params);
 	}
 	
 	@PostMapping("submitStartDateJob")
@@ -228,41 +223,40 @@ public class JobController {
 		return obj;
 	}
 	
-	@PostMapping("describeJob")
-	public MockJob describeJob(@RequestBody MockJob obj) {
+	@PostMapping("describeJob/{taskId}")
+	public MockJob describeJob(@PathVariable String taskId,@RequestBody MockJob obj) {
 		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
-		Task t = getAppropriateTask(u.getId(),obj.getTaskID());
+		Task t = getAppropriateTask(u.getId(),taskId);
 		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
 		variables.put("jobDescription", obj.getDescritpion());
 		taskService.complete(t.getId(),variables);		
 		return obj;
 	}
 	
-	@PostMapping("requestForDescribeJob")
-	public MockJob requestForDescribeJob(@RequestBody MockJob obj) {
+	@PostMapping("requestForDescribeJob/{taskId}")
+	public void requestForDescribeJob(@PathVariable String taskId,@RequestBody Map<String, String> params){
 		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
-		Task t = getAppropriateTask(u.getId(),obj.getTaskID());
+		Task t = getAppropriateTask(u.getId(),taskId);
 		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
-		variables.put("jobHowToDoDescription", obj.getDescritpion());
-		variables.put("choosenCompanyID", obj.getSentMail());
+		variables.put("jobHowToDoDescription", params.get("descriptionField"));
+		variables.put("choosenCompanyID", params.get("choosenCompanyIDField2"));
 		variables.put("repeatProcess",0);
 		variables.put("describeProcess",1);
-		taskService.complete(t.getId(),variables);		
-		return obj;
+		runtimeService.setVariables(t.getProcessInstanceId(), variables);
+		formService.submitTaskFormData(taskId, params);
 	}
 	
-	@PostMapping("repeatJob")
-	public MockJob repeatJob(@RequestBody MockJob obj) {
+	@PostMapping("repeatJob/{taskId}")
+	public void repeatJob(@PathVariable String taskId,@RequestBody Map<String, String> params){
 		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
-		Task t = getAppropriateTask(u.getId(),obj.getTaskID());
+		Task t = getAppropriateTask(u.getId(),taskId);
 		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
 		int temp = (int) variables.get("numberOfRepeting");
 		if(temp < 3)
 			temp++;
 		else
 			temp = 3;
-			
-		if(obj.getMaxPrice() == 2)
+		if(params.get("repeatJobField") == "no")
 			temp = 3;
 		Job j = (Job)variables.get("jobObj");
 		j.setOffers(new ArrayList<Offer>());
@@ -270,62 +264,58 @@ public class JobController {
 		variables.put("numberOfRepeting",temp);
 		variables.put("repeatProcess",1);
 		variables.put("describeProcess",0);
-		taskService.complete(t.getId(),variables);		
-		return obj;
+		runtimeService.setVariables(t.getProcessInstanceId(), variables);
+		formService.submitTaskFormData(taskId, params);
 	}
 	
-	@PostMapping("acceptWithDescription")
-	public MockJob acceptWithDescription(@RequestBody MockJob obj) {
+	@PostMapping("acceptWithDescription/{taskId}")
+	public void acceptWithDescription(@PathVariable String taskId,@RequestBody Map<String, String> params){
 		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
-		Task t = getAppropriateTask(u.getId(),obj.getTaskID());
+		Task t = getAppropriateTask(u.getId(),taskId);
 		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
-		variables.put("acceptDescribedJob",obj.getOffersLimit());
-		if(obj.getOffersLimit() == 1) {
-
+		variables.put("acceptDescribedJob",params.get("acceptWithDescField2"));
+		if(params.get("acceptWithDescField2").equals("1")) {
 			Job j = (Job)variables.get("jobObj");
-			j.setOwner(userService.findOne(Long.valueOf((int)variables.get("choosenCompanyID")).longValue()));
+			j.setOwner(userService.findOne(Long.valueOf((String)variables.get("choosenCompanyID")).longValue()));
 			variables.put("jobObj",j);
 			jobService.saveObj(j);
 		}
-		taskService.complete(t.getId(),variables);		
-		return obj;
+		runtimeService.setVariables(t.getProcessInstanceId(), variables);
+		formService.submitTaskFormData(taskId, params);
 	}
 	
-	@PostMapping("companyToUserDegree")
-	public MockJob companyToUserDegree(@RequestBody MockJob obj) {
+	@PostMapping("companyToUserDegree/{taskId}")
+	public void companyToUserDegree(@PathVariable String taskId,@RequestBody Map<String, String> params){
 		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
-		Task t = getAppropriateTask(u.getId(),obj.getTaskID());
+		Task t = getAppropriateTask(u.getId(),taskId);
 		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
-		int cID = (int)variables.get("choosenCompanyID");
-		User uu = userService.findOne(Long.valueOf(cID).longValue());
+		User uu = userService.findOne(Long.valueOf((String)variables.get("choosenCompanyID")).longValue());
 		uu.setDegreeCount(uu.getDegreeCount() + 1);
-		uu.setDegreeSum(uu.getDegreeSum() + obj.getOffersLimit());
+		uu.setDegreeSum(uu.getDegreeSum() + (int)Integer.parseInt(params.get("companyToUserDegreeField")));
 		userService.saveObj(uu);
-		taskService.complete(t.getId(),variables);		
-		return obj;
-	}
+
+		runtimeService.setVariables(t.getProcessInstanceId(), variables);
+		formService.submitTaskFormData(taskId, params);	}
 	
-	@PostMapping("userToCompanyDegree")
-	public MockJob userToCompanyDegree(@RequestBody MockJob obj) {
+	@PostMapping("userToCompanyDegree/{taskId}")
+	public void userToCompanyDegree(@PathVariable String taskId,@RequestBody Map<String, String> params){
 		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
-		Task t = getAppropriateTask(u.getId(),obj.getTaskID());
+		Task t = getAppropriateTask(u.getId(),taskId);
 		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
 		User uu = userService.findOne((long)variables.get("userID"));
 		uu.setDegreeCount(uu.getDegreeCount() + 1);
-		uu.setDegreeSum(uu.getDegreeSum() + obj.getOffersLimit());
+		uu.setDegreeSum(uu.getDegreeSum() + (int)Integer.parseInt(params.get("userToCompanyDegreeField")));
 		userService.saveObj(uu);
 
-		taskService.complete(t.getId(),variables);		
-		return obj;
-	}
+		runtimeService.setVariables(t.getProcessInstanceId(), variables);
+		formService.submitTaskFormData(taskId, params);	}
 	
-	@PostMapping("completeJobFromUser")
-	public MockJob completeJobFromUser(@RequestBody MockJob obj) {
+	@PostMapping("completeJobFromUser/{taskId}")
+	public void completeJobFromUser(@PathVariable String taskId,@RequestBody Map<String, String> params){
 		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
-		Task t = getAppropriateTask(u.getId(),obj.getTaskID());
+		Task t = getAppropriateTask(u.getId(),taskId);
 		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
-		
-		taskService.complete(t.getId(),variables);		
-		return obj;
+		runtimeService.setVariables(t.getProcessInstanceId(), variables);
+		formService.submitTaskFormData(taskId, params);	
 	}
 }

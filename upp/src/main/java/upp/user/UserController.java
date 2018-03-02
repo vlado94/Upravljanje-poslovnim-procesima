@@ -112,15 +112,15 @@ public class UserController {
 						
 					}
 					else if(t.getName().equals("Complete job")) {
-						mock.setDescritpion(userService.findOne(Long.valueOf((int)variables.get("choosenCompanyID")).longValue()).getName());
+						mock.setDescritpion(userService.findOne((long)Long.valueOf((String)variables.get("choosenCompanyID"))).getName());
 						mock.setCategoryName(job.getCategory().getName());						
 					}
 					else if(t.getName().equals("Add degree for company")) {
-						mock.setDescritpion(userService.findOne(Long.valueOf((int)variables.get("choosenCompanyID")).longValue()).getName());
+						mock.setDescritpion(userService.findOne((long)Long.valueOf((String)variables.get("choosenCompanyID"))).getName());
 						mock.setCategoryName(job.getCategory().getName());						
 					}
 					else if(t.getName().equals("Complete job")) {
-						mock.setDescritpion(userService.findOne(Long.valueOf((int)variables.get("choosenCompanyID")).longValue()).getName());
+						mock.setDescritpion(userService.findOne((long)Long.valueOf((String)variables.get("choosenCompanyID"))).getName());
 						mock.setCategoryName(job.getCategory().getName());						
 					}
 					

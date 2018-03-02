@@ -128,11 +128,14 @@ function showOffers(taskID) {
 
 function moreOffers(flag) {
 	task = {}
-	task.offersLimit = flag;
-	task.taskID = $("#taskMoreOffersStatusID").val();
-	task.auctionLimit = $("#auctionLimitForNewOffers").val();
+	if(flag == 1)
+		task.acceptOffersField = "yes";
+	else 
+		task.acceptOffersField = "no";
+
+	task.auctionLimitField = $("#auctionLimitForNewOffers").val();
 	$.ajax({
-        url: "/job/moreOffers",
+        url: "/job/moreOffers/"+$("#taskMoreOffersStatusID").val(),
         type: 'POST',
         data: JSON.stringify(task),
         contentType: "application/json",
@@ -150,11 +153,13 @@ function showZeroForm(taskID) {
 
 function cancelZeroOffersJob(flag) {
 	task = {}
-	task.offersLimit = flag;
-	task.taskID = $("#taskZeroOffersID").val();
-	task.auctionLimit = $("#auctionLimitForZeroOffers").val();
+	if(flag == 1)
+		task.extendTime = "no";
+	else 
+		task.extendTime = "yes";
+	task.timeForExtendZeroOffers = $("#auctionLimitForZeroOffers").val();
 	$.ajax({
-        url: "/job/zeroOffersDecision",
+        url: "/job/zeroOffersDecision/"+$("#taskZeroOffersID").val(),
         type: 'POST',
         data: JSON.stringify(task),
         contentType: "application/json",
@@ -173,10 +178,11 @@ function acceptOfferFormOpen(companyID) {
 
 function acceptOffer() {
 	task = {}
-	task.sentMail = $("#companyForAccept").val();
-	task.taskID = $("#showOffersForTaskID").val();
+	task.choosenCompanyIDField = $("#companyForAccept").val();
+	task.cancelJobField = "";
+	task.repeatJobField = "";
 	$.ajax({
-        url: "/job/acceptOfferForCompany",
+        url: "/job/acceptOfferForCompany/"+$("#showOffersForTaskID").val(),
         type: 'POST',
         data: JSON.stringify(task),
         contentType: "application/json",
@@ -188,11 +194,10 @@ function acceptOffer() {
 
 function moreInfoForAccept() {
 	task = {}
-	task.taskID = $("#showOffersForTaskID").val();
-	task.description = $("#howWillDoJob").val();	
-	task.sentMail = $("#companyForAccept").val();
+	task.descriptionField = $("#howWillDoJob").val();	
+	task.choosenCompanyIDField2 = $("#companyForAccept").val();
 	$.ajax({
-        url: "/job/requestForDescribeJob",
+        url: "/job/requestForDescribeJob/"+$("#showOffersForTaskID").val(),
         type: 'POST',
         data: JSON.stringify(task),
         contentType: "application/json",
@@ -205,10 +210,18 @@ function moreInfoForAccept() {
 
 function repeatJob(flag) {
 	task = {}
-	task.maxPrice = flag;	
-	task.taskID = $("#showOffersForTaskID").val();
+	task.choosenCompanyIDField = "";
+
+	if(flag == 1) {
+		task.repeatJobField = "yes";
+		task.cancelJobField = "no";
+	}
+	else {
+		task.repeatJobField = "no";
+		task.cancelJobField = "yes";
+	}
 	$.ajax({
-        url: "/job/repeatJob",
+        url: "/job/repeatJob/"+$("#showOffersForTaskID").val(),
         type: 'POST',
         data: JSON.stringify(task),
         contentType: "application/json",
@@ -227,11 +240,14 @@ function showFormWithDescritpion(taskID,desc) {
 
 
 function defineStatusAfterDesc(flag) {
-	task = {}
-	task.offersLimit = flag;	
-	task.taskID = $("#acceptJobWithDescritpionTaskID").val();
+	task = {}	
+
+	if(flag == 0)
+		task.acceptWithDescField2 = 0;
+	else 
+		task.acceptWithDescField2 = 1;
 	$.ajax({
-        url: "/job/acceptWithDescription",
+        url: "/job/acceptWithDescription/"+$("#acceptJobWithDescritpionTaskID").val(),
         type: 'POST',
         data: JSON.stringify(task),
         contentType: "application/json",
@@ -249,10 +265,9 @@ function showFormForDegree(taskID) {
 
 function giveDegree() {
 	task = {}
-	task.offersLimit = $("#companyDegree").val();	
-	task.taskID = $("#taskForDegreCompanyID").val();
+	task.userToCompanyDegreeField = $("#companyDegree").val();	
 	$.ajax({
-        url: "/job/userToCompanyDegree",
+        url: "/job/userToCompanyDegree/"+$("#taskForDegreCompanyID").val(),
         type: 'POST',
         data: JSON.stringify(task),
         contentType: "application/json",
@@ -264,9 +279,8 @@ function giveDegree() {
 
 function completeJob(taskID) {
 	task = {}
-	task.taskID = taskID
 	$.ajax({
-        url: "/job/completeJobFromUser",
+        url: "/job/completeJobFromUser/"+taskID,
         type: 'POST',
         data: JSON.stringify(task),
         contentType: "application/json",

@@ -57,12 +57,31 @@
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${howeverSend==1}]]></conditionExpression>
     </sequenceFlow>
     <sequenceFlow id="flow40" sourceRef="usertask2" targetRef="exclusivegateway4"></sequenceFlow>
-    <userTask id="usertask4" name="Jobs for confirm" activiti:assignee="${userID}"></userTask>
-    <userTask id="usertask5" name="More offer request" activiti:assignee="${userID}"></userTask>
+    <userTask id="usertask4" name="Jobs for confirm" activiti:assignee="${userID}">
+      <extensionElements>
+        <activiti:formProperty id="choosenCompanyIDField" name="choosenCompanyIDField" type="string"></activiti:formProperty>
+        <activiti:formProperty id="repeatJobField" name="repeatJobField" type="string"></activiti:formProperty>
+        <activiti:formProperty id="cancelJobFild" name="cancelJobFild" type="string"></activiti:formProperty>
+      </extensionElements>
+    </userTask>
+    <userTask id="usertask5" name="More offer request" activiti:assignee="${userID}">
+      <extensionElements>
+        <activiti:formProperty id="acceptOffers" name="acceptOffers" type="string"></activiti:formProperty>
+        <activiti:formProperty id="auctionLimitField" name="auctionLimitField" type="string"></activiti:formProperty>
+      </extensionElements>
+    </userTask>
     <sequenceFlow id="flow49" sourceRef="exclusivegateway3" targetRef="usertask5">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${jobObj.offersLimit != jobObj.offers.size() && jobObj.offers.size() != 0}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask6" name="No offers decision" activiti:assignee="${userID}"></userTask>
+    <userTask id="usertask6" name="No offers decision" activiti:assignee="${userID}">
+      <extensionElements>
+        <activiti:formProperty id="acceptOffers" name="acceptOffers" type="enum">
+          <activiti:value id="yes" name="yes"></activiti:value>
+          <activiti:value id="no" name="no"></activiti:value>
+        </activiti:formProperty>
+        <activiti:formProperty id="auctionLimit" name="auctionLimit" type="string"></activiti:formProperty>
+      </extensionElements>
+    </userTask>
     <sequenceFlow id="flow50" sourceRef="exclusivegateway3" targetRef="usertask6">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${jobObj.offers.size() == 0}]]></conditionExpression>
     </sequenceFlow>
@@ -88,11 +107,20 @@
     <sequenceFlow id="flow62" sourceRef="exclusivegateway7" targetRef="servicetask1">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${numberOfRepeting != 3 && repeatProcess == 1}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask8" name="Describe process" activiti:assignee="${choosenCompanyID}"></userTask>
+    <userTask id="usertask8" name="Describe process" activiti:assignee="${choosenCompanyID}">
+      <extensionElements>
+        <activiti:formProperty id="choosenCompanyIDField2" name="choosenCompanyIDField2" type="string"></activiti:formProperty>
+        <activiti:formProperty id="descriptionField" name="descriptionField" type="string"></activiti:formProperty>
+      </extensionElements>
+    </userTask>
     <sequenceFlow id="flow63" sourceRef="exclusivegateway7" targetRef="usertask8">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${repeatProcess == 0 && describeProcess == 1}]]></conditionExpression>
     </sequenceFlow>
-    <userTask id="usertask9" name="Decide job status with description" activiti:assignee="${userID}"></userTask>
+    <userTask id="usertask9" name="Decide job status with description" activiti:assignee="${userID}">
+      <extensionElements>
+        <activiti:formProperty id="acceptWithDescField2" name="acceptWithDescField2" type="string"></activiti:formProperty>
+      </extensionElements>
+    </userTask>
     <sequenceFlow id="flow64" sourceRef="usertask8" targetRef="usertask9"></sequenceFlow>
     <exclusiveGateway id="exclusivegateway8" name="Exclusive Gateway"></exclusiveGateway>
     <sequenceFlow id="flow65" sourceRef="usertask9" targetRef="exclusivegateway8"></sequenceFlow>
@@ -104,8 +132,16 @@
     </sequenceFlow>
     <sequenceFlow id="flow75" sourceRef="exclusivegateway3" targetRef="usertask4"></sequenceFlow>
     <parallelGateway id="parallelgateway1" name="Parallel Gateway"></parallelGateway>
-    <userTask id="usertask10" name="Add degree for user" activiti:assignee="${choosenCompanyID} "></userTask>
-    <userTask id="usertask11" name="Add degree for company" activiti:assignee="${userID}"></userTask>
+    <userTask id="usertask10" name="Add degree for user" activiti:assignee="${choosenCompanyID} ">
+      <extensionElements>
+        <activiti:formProperty id="companyTouserDegreeField" name="companyTouserDegreeField" type="string"></activiti:formProperty>
+      </extensionElements>
+    </userTask>
+    <userTask id="usertask11" name="Add degree for company" activiti:assignee="${userID}">
+      <extensionElements>
+        <activiti:formProperty id="companyToUserDegreeField" name="companyToUserDegreeField" type="string"></activiti:formProperty>
+      </extensionElements>
+    </userTask>
     <sequenceFlow id="flow77" sourceRef="parallelgateway1" targetRef="usertask10"></sequenceFlow>
     <sequenceFlow id="flow78" sourceRef="parallelgateway1" targetRef="usertask11"></sequenceFlow>
     <inclusiveGateway id="inclusivegateway1" name="Inclusive Gateway"></inclusiveGateway>

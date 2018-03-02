@@ -78,10 +78,9 @@ function showDescribeJobForm(taskID) {
 
 function submitJobDescription() {
 	job = {}
-	job.taskID = $("#taskDescribeJobID").val();
 	job.descritpion = $("#jobDescription").val();
 	$.ajax({
-        url: "/job/describeJob",
+        url: "/job/describeJob/"+$("#taskDescribeJobID").val(),
         type: 'POST',
         data: JSON.stringify(job),
         contentType: "application/json",
@@ -98,10 +97,9 @@ function showFormForDegree(taskID) {
 
 function giveDegree() {
 	task = {}
-	task.offersLimit = $("#userDegree").val();	
-	task.taskID = $("#taskForDegreUserID").val();
+	task.companyToUserDegreeField = $("#userDegree").val();	
 	$.ajax({
-        url: "/job/companyToUserDegree",
+        url: "/job/companyToUserDegree/"+$("#taskForDegreUserID").val(),
         type: 'POST',
         data: JSON.stringify(task),
         contentType: "application/json",
