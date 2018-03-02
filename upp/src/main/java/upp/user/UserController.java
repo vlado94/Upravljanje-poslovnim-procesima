@@ -99,6 +99,19 @@ public class UserController {
 						mock.setDescritpion((String)variables.get("jobDescription"));
 						
 					}
+					else if(t.getName().equals("Complete job")) {
+						mock.setDescritpion(userService.findOne(Long.valueOf((int)variables.get("choosenCompanyID")).longValue()).getName());
+						mock.setCategoryName(job.getCategory().getName());						
+					}
+					else if(t.getName().equals("Add degree for company")) {
+						mock.setDescritpion(userService.findOne(Long.valueOf((int)variables.get("choosenCompanyID")).longValue()).getName());
+						mock.setCategoryName(job.getCategory().getName());						
+					}
+					else if(t.getName().equals("Complete job")) {
+						mock.setDescritpion(userService.findOne(Long.valueOf((int)variables.get("choosenCompanyID")).longValue()).getName());
+						mock.setCategoryName(job.getCategory().getName());						
+					}
+					
 					mock.setTaskID(t.getId());
 					mock.setTaskName(t.getName());
 					retVal.getJobs().add(mock);
@@ -126,6 +139,10 @@ public class UserController {
 						mock.setAuctionLimit(job.getAuctionLimit());
 						mock.setCategoryName(job.getCategory().getName());
 						mock.setMaxPrice(job.getMaxPrice());
+					}
+					else if(t.getName().equals("Add degree for user")) {
+						mock.setDescritpion(job.getOwner().getName());
+						mock.setCategoryName(job.getCategory().getName());						
 					}
 					retVal.getJobs().add(mock);
 				}

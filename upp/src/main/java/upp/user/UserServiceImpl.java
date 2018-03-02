@@ -49,6 +49,11 @@ public class UserServiceImpl implements UserService {
 	public User findOne(Long id) {
 		return repository.findOne(id);
 	}
+	
+	@Override
+	public User saveObj(User obj) {
+		return repository.save(obj);
+	}
 
 	@Override
 	public void delete(Long id) {

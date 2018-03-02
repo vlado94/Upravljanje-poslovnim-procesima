@@ -156,11 +156,4 @@ public class JobComponentService {
 		//mailSender.send(message);
 		return firm.getId().toString();		
 	}
-	
-	public void notifyUserEnoughOffers(String processID) { 
-		
-		int a = 3;
-		a = 5;
-		
-	}
 }

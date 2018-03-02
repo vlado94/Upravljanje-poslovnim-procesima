@@ -49,8 +49,15 @@ public class User {
 	
 	private String randomKey;	
 
+	private int degreeCount;
+	private int degreeSum;
+
+	
 	public User() {
 		categories = new ArrayList<Category>();
+		degreeCount = 0;
+		degreeSum = 0;
+
 	}
 	public User(MockUser obj) {
 		name = obj.getName();

@@ -55,7 +55,7 @@ public class Job {
 	@OneToMany
 	@JoinTable(name = "JOB_OFFER", joinColumns = @JoinColumn(name = "JOB_ID"), inverseJoinColumns = @JoinColumn(name = "OFFER_ID"))
 	private List<Offer> offers;
-
+	
 	
 	public Job() {
 		companies = new ArrayList<User>();

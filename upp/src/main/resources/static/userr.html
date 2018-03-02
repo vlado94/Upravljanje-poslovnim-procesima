@@ -113,6 +113,32 @@
 			</tbody>
 		</table>
 		
+		<legend>Company for degree</legend>
+		<table class="table table-bordered">
+		    <thead>
+  	      		<tr>
+			        <th>Category</th>
+			        <th>Company name</th>
+			        <th>Action</th>
+		    	</tr>
+		    </thead>
+		    <tbody id="tasksGiveDegreeCompanyBody">
+			</tbody>
+		</table>
+		
+		<legend>Job to complete</legend>
+		<table class="table table-bordered">
+		    <thead>
+  	      		<tr>
+			        <th>Category</th>
+			        <th>Company name</th>
+			        <th>Action</th>
+		    	</tr>
+		    </thead>
+		    <tbody id="tasksCompleteJobBody">
+			</tbody>
+		</table>
+		
 		<div class="row jobStatus" >
 			<form id="newOfferForm" class="col-sm-offset-3 col-sm-6 divToHide">
 				<fieldset>
@@ -123,6 +149,22 @@
 					</div>					
 					<div class="col-sm-2">
 						<button type="button" onclick="statusJob(2)" class="btn btn-primary">Quit</button>
+					</div>					
+				</fieldset>
+			</form>			
+		</div>
+		
+		<div class="row degreeForCompany" >
+			<form id="degreeForCompany" class="col-sm-offset-3 col-sm-6 divToHide">
+				<fieldset>
+					<legend>Company degree</legend>
+					<input type="hidden" id="taskForDegreCompanyID" >
+					<label class="col-sm-4">Degree:</label>
+					<div class="col-sm-8">
+						<input type="text" id="companyDegree" class="form-control" value="4" />
+					</div>				
+					<div class="col-sm-2">
+						<button type="button" onclick="giveDegree()" class="btn btn-primary">Give degree</button>
 					</div>					
 				</fieldset>
 			</form>			

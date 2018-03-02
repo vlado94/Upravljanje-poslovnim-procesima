@@ -13,12 +13,15 @@ $(document).ready(function() {
     			if(data.jobs[i].taskName == "Company offer for demmand") {
     				$("#tasksTableBody").append('<tr><td>'+ data.jobs[i].categoryName+'</td><td>'+new Date(data.jobs[i].auctionLimit).toString().substring(0,15)+'</td><td>'+new Date(data.jobs[i].jobLimit).toString().substring(0,15)+'</td><td>'+data.jobs[i].maxPrice+'</td><td><button type="button" onclick=showJobForm("'+data.jobs[i].taskID+'") class="btn btn-primary">Accept</button></td></tr>');
     			}  
-    			if(data.jobs[i].taskName == "Define start job") {
+    			else if(data.jobs[i].taskName == "Define start job") {
     				$("#tasksAcceptableJobs").append('<tr><td>'+ data.jobs[i].categoryName+'</td><td>'+new Date(data.jobs[i].auctionLimit).toString().substring(0,15)+'</td><td>'+new Date(data.jobs[i].jobLimit).toString().substring(0,15)+'</td><td>'+data.jobs[i].maxPrice+'</td><td><button type="button" onclick=showAcceptJobForm("'+data.jobs[i].taskID+'") class="btn btn-primary">Set date</button></td></tr>');
     			}  
-    			if(data.jobs[i].taskName == "Describe process") {
+    			else if(data.jobs[i].taskName == "Describe process") {
     				$("#tasksForDescribeJobs").append('<tr><td>'+ data.jobs[i].categoryName+'</td><td>'+new Date(data.jobs[i].auctionLimit).toString().substring(0,15)+'</td><td>'+new Date(data.jobs[i].jobLimit).toString().substring(0,15)+'</td><td>'+data.jobs[i].maxPrice+'</td><td><button type="button" onclick=showDescribeJobForm("'+data.jobs[i].taskID+'") class="btn btn-primary">Describe</button></td></tr>');
     			}  
+    			else if(data.jobs[i].taskName == "Add degree for user"){
+    				$("#tasksGiveDegreeUserBody").append('<tr><td>'+ data.jobs[i].categoryName+'</td><td>'+data.jobs[i].descritpion+'</td><td><button type="button" class="btn btn-primary" onclick=showFormForDegree("'+data.jobs[i].taskID+'")>Show</button></td></tr>');
+    			}
     			
     			
     		}
@@ -87,3 +90,23 @@ function submitJobDescription() {
     })	
 }
 
+function showFormForDegree(taskID) {
+	$("#taskForDegreUserID").val(taskID);
+	$(".forms").css("display","none");
+	$(".degreeForUser").css("display","block");
+}
+
+function giveDegree() {
+	task = {}
+	task.offersLimit = $("#userDegree").val();	
+	task.taskID = $("#taskForDegreUserID").val();
+	$.ajax({
+        url: "/job/companyToUserDegree",
+        type: 'POST',
+        data: JSON.stringify(task),
+        contentType: "application/json",
+        dataType : "json"
+    }).done(function (data) {
+    	window.location.reload(true);
+    })
+}

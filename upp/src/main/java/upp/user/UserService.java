@@ -22,4 +22,6 @@ public interface UserService {
 	void delete(Long id);
 	
 	String generateRandomKey();
+	
+	User saveObj(User obj);
 }
