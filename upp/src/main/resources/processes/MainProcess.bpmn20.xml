@@ -55,7 +55,7 @@
     </subProcess>
     <boundaryEvent id="boundarytimer1" name="Timer" attachedToRef="subprocess2" cancelActivity="true">
       <timerEventDefinition>
-        <timeDuration>PT30S</timeDuration>
+        <timeDuration>PT2M</timeDuration>
       </timerEventDefinition>
     </boundaryEvent>
     <sequenceFlow id="flow35" sourceRef="boundarytimer1" targetRef="exclusivegateway3"></sequenceFlow>
@@ -86,7 +86,7 @@
       </extensionElements>
     </userTask>
     <sequenceFlow id="flow49" sourceRef="exclusivegateway3" targetRef="usertask5">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${jobObj.offersLimit != jobObj.offers.size() && jobObj.offers.size() != 0}]]></conditionExpression>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${expectOffers  != jobObj.offers.size() && jobObj.offers.size() != 0}]]></conditionExpression>
     </sequenceFlow>
     <userTask id="usertask6" name="No offers decision" activiti:assignee="${userID}">
       <extensionElements>
@@ -145,7 +145,9 @@
     <sequenceFlow id="flow67" sourceRef="exclusivegateway8" targetRef="usertask7">
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${acceptDescribedJob == 1}]]></conditionExpression>
     </sequenceFlow>
-    <sequenceFlow id="flow75" sourceRef="exclusivegateway3" targetRef="usertask4"></sequenceFlow>
+    <sequenceFlow id="flow75" sourceRef="exclusivegateway3" targetRef="usertask4">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${expectOffers == jobObj.offers.size()}]]></conditionExpression>
+    </sequenceFlow>
     <parallelGateway id="parallelgateway1" name="Parallel Gateway"></parallelGateway>
     <userTask id="usertask10" name="Add degree for user" activiti:assignee="${choosenCompanyID} ">
       <extensionElements>
@@ -180,6 +182,7 @@
     <sequenceFlow id="flow90" sourceRef="usertask12" targetRef="parallelgateway1"></sequenceFlow>
     <sequenceFlow id="flow91" sourceRef="timerintermediatecatchevent1" targetRef="usertask12"></sequenceFlow>
     <sequenceFlow id="flow92" sourceRef="inclusivegateway1" targetRef="endevent4"></sequenceFlow>
+    <sequenceFlow id="flow101" sourceRef="subprocess2" targetRef="exclusivegateway3"></sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_auctionProcess">
     <bpmndi:BPMNPlane bpmnElement="auctionProcess" id="BPMNPlane_auctionProcess">
@@ -493,6 +496,10 @@
       <bpmndi:BPMNEdge bpmnElement="flow92" id="BPMNEdge_flow92">
         <omgdi:waypoint x="3290.0" y="200.0"></omgdi:waypoint>
         <omgdi:waypoint x="3600.0" y="189.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow101" id="BPMNEdge_flow101">
+        <omgdi:waypoint x="1791.0" y="395.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1890.0" y="340.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

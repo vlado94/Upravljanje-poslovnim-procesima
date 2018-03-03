@@ -90,7 +90,7 @@ public class JobComponentService {
 					companyForRemove.add(foundedCompanies.get(j));
 		foundedCompanies.removeAll(companyForRemove);
 		/*for(int i=0;i<foundedCompanies.size();i++)
-			if(!job.getCompanyIDS().contains(foundedCompanies.get(i).getId()))
+			if(!job.getCompanyIDS().contains(foundedCompanies.get(i).getId()) && numberOfOffers != retVal.size())
 				retVal.add(foundedCompanies.get(i).getId());
 		*/
 		Collections.shuffle(foundedCompanies);
@@ -146,6 +146,7 @@ public class JobComponentService {
 			}
 		}
 		variables.put("job", mock);
+		variables.put("expectOffers", retVal.size());
 		runtimeService.setVariables(processID, variables);
 		return retVal;
 	}
