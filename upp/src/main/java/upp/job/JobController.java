@@ -1,6 +1,9 @@
 package upp.job;
 
 import java.sql.Date;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -112,8 +115,17 @@ public class JobController {
 		}
 		else {
 			Job j = jobService.findOne(((Job)variables.get("jobObj")).getId());
-			String[] date = params.get("auctionLimitField").split("-");
-			j.setAuctionLimit(new Date(Integer.parseInt(date[0]),Integer.parseInt(date[1]),Integer.parseInt(date[2])));
+			
+			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+			java.util.Date date2 = null;
+			try {
+				date2 = formatter.parse(params.get("auctionLimitField"));
+				
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			j.setAuctionLimit(new Date(date2.getTime()));
 			variables.put("acceptOffers", 0);	
 			j = jobService.saveObj(j);
 			variables.put("jobObj", j);			
@@ -134,8 +146,18 @@ public class JobController {
 			variables.put("noOffersCancelProces", 0);
 
 			Job j = jobService.findOne(((Job)variables.get("jobObj")).getId());
-			String[] date = params.get("timeForExtendZeroOffers").split("-");
-			j.setAuctionLimit(new Date(Integer.parseInt(date[0]),Integer.parseInt(date[1]),Integer.parseInt(date[2])));
+			
+			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+			java.util.Date date2 = null;
+			try {
+				date2 = formatter.parse(params.get("timeForExtendZeroOffers"));
+				
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			j.setAuctionLimit(new Date(date2.getTime()));
 			variables.put("acceptOffers", 0);	
 			j = jobService.saveObj(j);
 		}
@@ -151,8 +173,16 @@ public class JobController {
 		if(t != null) {
 			HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
 			variables.put("currentOffer",Double.parseDouble(params.get("priceForJob")));
-			String[] date = params.get("jobWilBeFinished").split("-");			
-			variables.put("currentJobFinisherOffer",new Date(Integer.parseInt(date[0]),Integer.parseInt(date[1]),Integer.parseInt(date[2])));
+			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+			java.util.Date date2 = null;
+			try {
+				date2 = formatter.parse(params.get("jobWilBeFinished"));
+				
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			variables.put("currentJobFinisherOffer",date2);
 			runtimeService.setVariables(t.getProcessInstanceId(), variables);
 			formService.submitTaskFormData(taskId, params);			
 			variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
@@ -214,6 +244,22 @@ public class JobController {
              }  
         }  
         
+        temp = new Offer();  
+        for(int i=0; i < test.length; i++){  
+             for(int j=1; j < (test.length-i); j++){ 
+            	 double avgDegree1 = 0;
+            	 if(test[j-1].getCompany().getDegreeCount() > 0)
+            		 avgDegree1 = test[j-1].getCompany().getDegreeSum()/test[j-1].getCompany().getDegreeCount();
+            	 double avgDegree2 = 0;
+            	 if(test[j].getCompany().getDegreeCount() > 0)
+            		 avgDegree2 = test[j].getCompany().getDegreeSum()/test[j].getCompany().getDegreeCount();
+            	 if(test[j-1].getJobFinished().equals(test[j].getJobFinished()) && test[j-1].getOfferdPrice() == test[j].getOfferdPrice() && avgDegree1 > avgDegree2){  
+                	 temp = test[j-1];  
+                     test[j-1] = test[j];  
+                     test[j] = temp;  
+                 }                        
+             }  
+        }
         retVal.setOffers(new ArrayList<Offer>(Arrays.asList(test)));
 		return retVal;
 	}
@@ -236,9 +282,17 @@ public class JobController {
 		Task t = getAppropriateTask(u.getId(),taskId);
 		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
 		Job job = (Job) variables.get("jobObj");
-		String[] date = params.get("jobStartOnDate").split("-");
-		Date temp = new Date(Integer.parseInt(date[0]),Integer.parseInt(date[1]),Integer.parseInt(date[2]));
-		job.setStartJobDate(new java.sql.Date(temp.getTime()));
+		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		java.util.Date date2 = null;
+		try {
+			date2 = formatter.parse(params.get("jobStartOnDate"));
+			
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		job.setStartJobDate(new java.sql.Date(date2.getTime()));
 		job = jobService.saveObj(job);
 		variables.put("jobObj", job);
 		runtimeService.setVariables(t.getProcessInstanceId(), variables);
