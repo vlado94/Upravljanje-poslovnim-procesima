@@ -42,33 +42,36 @@ $(document).ready(function() {
         dataType : "json"
     }).done(function (data) {
     	for(i=0;i<data.length;i++) {
-    		$('#category').append($('<option>', {
-    		    value: data[i].id,
-    		    text: data[i].name
-    		}));
+    		if(i != data.length-1) {
+	    		$('#category').append($('<option>', {
+	    		    value: data[i].id,
+	    		    text: data[i].name
+	    		}));
+    		}
+    		else {
+    			$("#processID").val(data[i].name);
+    		}
+    		
     	}
     })
     
     $("#jobForm").submit(function( e ) {
         if (e.isDefaultPrevented() === false) {
         	dataToAdd = {}
-        	dataToAdd.categoryID = $("#category").val();
-        	dataToAdd.descritpion = $("#description").val();
-        	dataToAdd.auctionLimit = $("#auctionLimit").val();
-        	dataToAdd.jobLimit = $("#jobLimit").val();
-        	dataToAdd.offersLimit = $("#offersLimit").val();
-        	dataToAdd.maxPrice = $("#maxPrice").val();
+        	dataToAdd.categoryIDField = $("#category").val();
+        	dataToAdd.descritpionField = $("#description").val();
+        	dataToAdd.auctionLimitField = $("#auctionLimit").val();
+        	dataToAdd.jobLimitField = $("#jobLimit").val();
+        	dataToAdd.offersLimitField = $("#offersLimit").val();
+        	dataToAdd.maxPriceField = $("#maxPrice").val();
         	$.ajax({
-                url: "/job",
+                url: "/job/"+$("#processID").val(),
                 type: 'POST',
                 data: JSON.stringify(dataToAdd),
                 contentType: "application/json",
                 dataType : "json"
             }).done(function (data) {
             	window.location.reload(true);
-            })
-            .fail(function (jqXHR, textStatus, errorThrown) {
-                showErrors(errorThrown)
             })
         }
 		e.preventDefault();

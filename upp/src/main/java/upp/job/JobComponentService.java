@@ -34,9 +34,6 @@ public class JobComponentService {
 	private JobService jobService;
 
 	@Autowired
-	private TaskService taskService;
-
-	@Autowired
 	private JavaMailSender mailSender;
 	
 	@Autowired

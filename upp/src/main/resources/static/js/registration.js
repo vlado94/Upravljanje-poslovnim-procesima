@@ -1,6 +1,13 @@
 $(document).ready(function() {
+	 $.ajax({
+        url: "/category/startReg",
+        type: 'GET',
+    }).done(function (data) {
+		$("#processID").val(data);
+    })
+	    
 	$.ajax({
-        url: "/category",
+        url: "/category/second",
         type: 'GET',
         dataType : "json"
     }).done(function (data) {
@@ -24,7 +31,7 @@ $(document).ready(function() {
         	dataToAdd.postNumber = $("#postNumber").val();
         	dataToAdd.role = $("#role").val();
         	$.ajax({
-                url: "/user",
+                url: "/user/"+$("#processID").val(),
                 type: 'POST',
                 data: JSON.stringify(dataToAdd),
                 contentType: "application/json",
@@ -70,7 +77,7 @@ function addCompany() {
 	dataToAdd.latitude = $("#latitude").val();
 	dataToAdd.categories = $("#categories").val();
 	$.ajax({
-        url: "/user/addCompany",
+        url: "/user/addCompany/"+$("#processID").val(),
         type: 'POST',
         data: JSON.stringify(dataToAdd),
         contentType: "application/json",

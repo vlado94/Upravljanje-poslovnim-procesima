@@ -15,7 +15,6 @@ import javax.servlet.http.HttpSession;
 import org.activiti.engine.FormService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
-import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,26 +53,50 @@ public class JobController {
 	@Autowired
 	private FormService formService;
 	
-	@PostMapping
-	public MockJob add(@RequestBody MockJob obj) {
-		HashMap<String, Object> variables=new HashMap<>();
-		ProcessInstance pi = runtimeService.startProcessInstanceByKey("auctionProcess",variables);
+	@PostMapping("{processId}")
+	public String add(@PathVariable String processId,@RequestBody Map<String, String> params) {
+		HashMap<String, Object> variables = (HashMap<String, Object>) runtimeService.getVariables(processId);
 		List<Task> tasks= taskService.createTaskQuery().active().list();
 		Task t = null;
 		for (Task task : tasks) {
-			if(task.getProcessInstanceId().equals(pi.getId()))
+			if(task.getProcessInstanceId().equals(processId))
 				t = task;
-		}
-		obj.setUserID((long)httpSession.getAttribute("userID"));		
-		variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
-
-		variables.put("userID",obj.getUserID());
-		variables.put("job", obj);
+		}		
+		variables.put("job", getMock(params));
 		variables.put("numberOfRepeting", 0);
-		taskService.complete(t.getId(),variables);
 
-		return obj;
+		runtimeService.setVariables(t.getProcessInstanceId(), variables);
+		formService.submitTaskFormData(t.getId(), params);
+		return "";
 	}	
+	
+	private MockJob getMock(Map<String, String> params) {
+		MockJob retVal = new MockJob();
+		retVal.setCategoryID(Long.parseLong(params.get("categoryIDField")));
+		retVal.setDescritpion(params.get("descritpionField"));
+		retVal.setOffersLimit(Integer.parseInt(params.get("offersLimitField")));
+		retVal.setMaxPrice(Double.parseDouble(params.get("maxPriceField")));
+		retVal.setUserID((long)httpSession.getAttribute("userID"));
+		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		java.util.Date date2 = null;
+		try {
+			date2 = formatter.parse(params.get("auctionLimitField"));
+			
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		retVal.setAuctionLimit(new Date(date2.getTime()));
+		try {
+			date2 = formatter.parse(params.get("jobLimitField"));
+			
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		retVal.setJobLimit(new Date(date2.getTime()));
+		return retVal;
+	}
 	
 	@PostMapping("statusSet/{taskId}")
 	public void statusSet(@PathVariable String taskId,@RequestBody Map<String, String> params) {

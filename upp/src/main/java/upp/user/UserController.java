@@ -2,6 +2,7 @@ package upp.user;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -170,17 +171,14 @@ public class UserController {
 	}
 	
 	
-	@PostMapping
-	public UserResponse add(@RequestBody MockUser obj) {
+	
+	
+	@PostMapping("/{userKey}")
+	public UserResponse add(@PathVariable String userKey,@RequestBody MockUser obj) {
 		UserResponse retVal = new UserResponse();
-		HashMap<String, Object> variables=new HashMap<>();
-		String key = userService.generateRandomKey();
-		variables.put("userKey",key);
-		runtimeService.startProcessInstanceByKey("registrationProcess",variables);
-
-		Task t= taskService.createTaskQuery().active().taskAssignee(key).list().get(0);
-		variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
-		obj.setRandomKey(key);
+		Task t= taskService.createTaskQuery().active().taskAssignee(userKey).list().get(0);
+		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
+		obj.setRandomKey(userKey);
 		variables.put("user", obj);
 		taskService.complete(t.getId(),variables);
 		
@@ -196,11 +194,10 @@ public class UserController {
 		return retVal;
 	}	
 	
-	@PostMapping("/addCompany")
-	public UserResponse addCompany(@RequestBody MockUser obj) {
+	@PostMapping("/addCompany/{userKey}")
+	public UserResponse addCompany(@PathVariable String userKey,@RequestBody MockUser obj) {
 		UserResponse retVal = new UserResponse();
-		Task t= taskService.createTaskQuery().active().taskAssignee(obj.getRandomKey()).list().get(0);
-
+		Task t= taskService.createTaskQuery().active().taskAssignee(userKey).list().get(0);
 		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
 		variables.put("user", obj);
 		taskService.complete(t.getId(),variables);
@@ -212,7 +209,7 @@ public class UserController {
 		}
 		return retVal;
 	}
-	
+
 	@GetMapping("/confirmRegistration/{key}")
 	public void confirmRegistration(@PathVariable String key) {
 		HashMap<String, Object> variables=new HashMap<>();
