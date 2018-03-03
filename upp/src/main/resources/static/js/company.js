@@ -39,11 +39,10 @@ function showJobForm(taskID) {
 
 function sendOffer() {
 	job = {}
-	job.taskID = $("#taskID").val();
-	job.jobLimit = $("#jobEndDate").val();
-	job.maxPrice = $("#jobPrice").val();
+	job.jobWilBeFinished = $("#jobEndDate").val();
+	job.priceForJob = $("#jobPrice").val();
 	$.ajax({
-        url: "/job/sendOffer",
+        url: "/job/sendOffer/"+$("#taskID").val(),
         type: 'POST',
         data: JSON.stringify(job),
         contentType: "application/json",
@@ -60,10 +59,9 @@ function showAcceptJobForm(taskID) {
 
 function submitStartJob() {
 	job = {}
-	job.taskID = $("#taskStartJobID").val();
-	job.jobLimit = $("#jobStartDate").val();
+	job.jobStartOnDate = $("#jobStartDate").val();
 	$.ajax({
-        url: "/job/submitStartDateJob",
+        url: "/job/submitStartDateJob/"+$("#taskStartJobID").val(),
         type: 'POST',
         data: JSON.stringify(job),
         contentType: "application/json",

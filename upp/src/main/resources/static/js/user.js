@@ -111,10 +111,9 @@ function showOffers(taskID) {
 	$(".divToHide").css("display","none");	
 	$("#activeOffers").css("display","block")
 	task = {}
-	task.taskID = taskID
 	$("#showOffersForTaskID").val(taskID);
 	$.ajax({
-        url: "/job/showOffers",
+        url: "/job/showOffers/"+taskID,
         type: 'POST',
         data: JSON.stringify(task),
         contentType: "application/json",

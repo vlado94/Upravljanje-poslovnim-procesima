@@ -143,16 +143,18 @@ public class JobController {
 		formService.submitTaskFormData(taskId, params);
 	}
 	
-	@PostMapping("sendOffer")
-	public String sendOffer(@RequestBody MockJob obj) {
+	@PostMapping("sendOffer/{taskId}")
+	public String sendOffer(@PathVariable String taskId,@RequestBody Map<String, String> params) {
 		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
-		Task t = getAppropriateTask(u.getId(),obj.getTaskID());
+		Task t = getAppropriateTask(u.getId(),taskId);
 		String retVal = "";
 		if(t != null) {
 			HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
-			variables.put("currentOffer",obj.getMaxPrice());
-			variables.put("currentJobFinisherOffer",obj.getJobLimit());
-			taskService.complete(t.getId(),variables);
+			variables.put("currentOffer",Double.parseDouble(params.get("priceForJob")));
+			String[] date = params.get("jobWilBeFinished").split("-");			
+			variables.put("currentJobFinisherOffer",new Date(Integer.parseInt(date[0]),Integer.parseInt(date[1]),Integer.parseInt(date[2])));
+			runtimeService.setVariables(t.getProcessInstanceId(), variables);
+			formService.submitTaskFormData(taskId, params);			
 			variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
 			retVal = (String) variables.get("currentRank");
 			retVal += "-" + (String) variables.get("currentProcess");
@@ -170,8 +172,8 @@ public class JobController {
 			Job job = jobService.findOne(((Job)variables.get("jobObj")).getId());
 			Offer o = new Offer();
 			o.setCompany(u);
-			o.setJobFinished((Date)variables.get("currentOffer"));
-			o.setOfferdPrice((double)variables.get("currentJobFinisherOffer"));
+			o.setJobFinished((Date)variables.get("currentJobFinisherOffer"));
+			o.setOfferdPrice((double)variables.get("currentOffer"));
 			o.setTaskID(t.getId());
  			o = offerService.save(o);
 			job.getOffers().add(o);
@@ -183,11 +185,11 @@ public class JobController {
 		return retVal;
 	}
 	
-	@PostMapping("showOffers")
-	public Job showOffers(@RequestBody MockJob obj) {
+	@PostMapping("showOffers/{taskId}")
+	public Job showOffers(@PathVariable String taskId) {
 		Job retVal = null;
 		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
-		Task t = getAppropriateTask(u.getId(),obj.getTaskID());
+		Task t = getAppropriateTask(u.getId(),taskId);
 		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
 		retVal = jobService.findOne(((Job)variables.get("jobObj")).getId());
 		Offer[] test = (Offer[]) retVal.getOffers().toArray(new Offer[retVal.getOffers().size()]);
@@ -228,17 +230,19 @@ public class JobController {
 		formService.submitTaskFormData(taskId, params);
 	}
 	
-	@PostMapping("submitStartDateJob")
-	public MockJob submitStartDateJob(@RequestBody MockJob obj) {
+	@PostMapping("submitStartDateJob/{taskId}")
+	public void submitStartDateJob(@PathVariable String taskId,@RequestBody Map<String, String> params){
 		User u = userService.findOne((Long)httpSession.getAttribute("userID"));
-		Task t = getAppropriateTask(u.getId(),obj.getTaskID());
+		Task t = getAppropriateTask(u.getId(),taskId);
 		HashMap<String, Object> variables =(HashMap<String, Object>) runtimeService.getVariables(t.getProcessInstanceId());
 		Job job = (Job) variables.get("jobObj");
-		job.setStartJobDate(obj.getJobLimit());
+		String[] date = params.get("jobStartOnDate").split("-");
+		Date temp = new Date(Integer.parseInt(date[0]),Integer.parseInt(date[1]),Integer.parseInt(date[2]));
+		job.setStartJobDate(new java.sql.Date(temp.getTime()));
 		job = jobService.saveObj(job);
 		variables.put("jobObj", job);
-		taskService.complete(t.getId(),variables);		
-		return obj;
+		runtimeService.setVariables(t.getProcessInstanceId(), variables);
+		formService.submitTaskFormData(taskId, params);
 	}
 	
 	@PostMapping("describeJob/{taskId}")
